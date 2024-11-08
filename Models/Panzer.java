@@ -16,7 +16,7 @@ public class Panzer {
 		this.damage=damage;
 		
 		this.state="Stop";//Stop, Fire, Move
-		this.side="Up";//Four sides Up,Down,Left,Right
+		this.side="Up";   //Four sides Up,Down,Left,Right
 	}
 
 	public int getHealth() {
