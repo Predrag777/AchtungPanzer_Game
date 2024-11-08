@@ -70,6 +70,14 @@ public class Panzer {
 
 	
 	
+	public int getFireRange() {
+		return fireRange;
+	}
+
+	public void setFireRange(int fireRange) {
+		this.fireRange = fireRange;
+	}
+
 	public int getSpeed() {
 		return speed;
 	}
