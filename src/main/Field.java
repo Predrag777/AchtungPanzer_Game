@@ -142,6 +142,20 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         	        double centerY = currPanzer.getY() + 50;
         	        g2d.rotate(angle, centerX,centerY);
         		}
+        		if(myPanzers.get(i).getState().equalsIgnoreCase("move")) {
+        			Panzer currPanzer=myPanzers.get(i);
+        			double deltaX=currPanzer.getNextX()-currPanzer.getX();
+        			double deltaY=currPanzer.getNextY()-currPanzer.getY();
+        			
+        			double angle=Math.atan2(deltaY, deltaX);
+        			
+        			double centerX = currPanzer.getX() + 100;
+        	        double centerY = currPanzer.getY() + 50;
+        	        
+        	        g2d.rotate(angle, centerX,centerY);
+        	        
+        	        
+        		}
         		g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(i).getName()+".png")), (int) myPanzers.get(i).getX(), (int) myPanzers.get(i).getY(), 200, 100, null);
         		g2d.setTransform(oldTransform);
         	}
@@ -181,8 +195,51 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         repaint();
 
         
-        for(int i=0;i<selected.size();i++) {
-	        System.out.println(selected.get(i));
+        for(int i=0;i<myPanzers.size();i++) {
+        	Panzer currPanzer=myPanzers.get(i);
+        	if(currPanzer.getState().equalsIgnoreCase("move")) {
+        		double targetX = currPanzer.getNextX();
+                double targetY = currPanzer.getNextY();
+
+                double deltaX = targetX - currPanzer.getX();
+                double deltaY = targetY - currPanzer.getY();
+
+                double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                if (distance < myPanzers.get(0).getSpeed()) {
+                	myPanzers.get(i).setX(targetX);
+                	myPanzers.get(i).setY(targetY);
+                    myPanzers.get(i).setState("stop");
+                    return;
+                }
+
+                double directionX = deltaX / distance;
+                double directionY = deltaY / distance;
+                angle = Math.atan2(directionY, directionX);
+                if(myPanzers.get(i).getState().equalsIgnoreCase("stop")) {
+                	directionX=0;
+                	directionY=0;
+                	targetX=myPanzers.get(i).getX();
+                	targetY=myPanzers.get(i).getY();
+                }
+                if(isCrashedOnObstacle()) {
+                	myPanzers.get(i).setX(currPanzer.getX()-directionX*50);
+                	myPanzers.get(i).setY(currPanzer.getY()-directionY*50);
+                	myPanzers.get(i).setState("stop");
+                	/*x-=directionX*50;
+                	y-=directionY*50;
+                	myPanzers.get(0).setState("stop");*/
+                	playSound("audio/panzerCrashOnObst.wav",0);
+                }else {
+                	myPanzers.get(i).setX(currPanzer.getX()+directionX*currPanzer.getSpeed());
+                	myPanzers.get(i).setY(currPanzer.getY()+directionY*currPanzer.getSpeed());
+                	
+        	        /*x += directionX * myPanzers.get(0).getSpeed();
+        	        y += directionY * myPanzers.get(0).getSpeed();*/
+                }
+    	        
+    	        
+    	        
+        	}
         }
     }
 
@@ -199,6 +256,13 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyPanzers.get(i));
 	    			}
+	    		}else {
+	    			for(int j=0;j<selected.size();j++) {
+		                selected.get(j).setState("move");
+		                selected.get(j).setNextX(e.getX());
+		                selected.get(j).setNextY(e.getY());
+	    			}
+	    			playSound("audio/panzerSelect1.wav", 0);
 	    		}
 	    	}
     	}
@@ -207,7 +271,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 	    		if(e.getX()>myPanzers.get(i).getX() && e.getX()<myPanzers.get(i).getX()+100 &&
 	    		   e.getY()>myPanzers.get(i).getY()-10 && e.getY()<myPanzers.get(i).getY()+100) {
 	    			selected.push(myPanzers.get(i));
-	    			playSound("audio/panzerSelect1.wav", 0);
+	    			playSound("audio/panzerSound.wav", 0);
 	    			System.out.println(selected);
 	    		}
 	    	}
@@ -215,37 +279,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     	if(e.getButton()==MouseEvent.BUTTON3) {//Unselect
     		selected=new LinkedList<>();
     	}
-        /*if (e.getX() >= a && e.getX() <= a + 100) {
-            playSound("audio/panzerFire.wav", 0);
-            myPanzers.get(0).setState("shot");
-            System.out.println("Shus");
-            double targetX = e.getX();
-            double targetY = e.getY();
-            targets.put(myPanzers.get(0), enemyPanzers.get(0));
-            double deltaX = targetX - x;
-            double deltaY = targetY - y;
-
-            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            //System.out.println(distance+"    "+myPanzers.get(0).getFireRange());
-            if(distance>myPanzers.get(0).getFireRange()) {
-            	System.out.println("KURAC");
-            }else {
-            	
-            	System.out.println("POGODAK");
-            }
-        } else {
-            if (!selected && e.getX() < myPanzers.get(0).getX() + 200 && e.getX() > myPanzers.get(0).getX() - 50 &&
-                e.getY() < myPanzers.get(0).getY() + 100 && e.getY() > myPanzers.get(0).getY()) {
-                playSound("audio/panzerSound.wav", 0);
-                selected = true;
-            } else {
-                playSound("audio/panzerSelect1.wav", 0);
-                selected = false;
-                myPanzers.get(0).setState("move");
-                myPanzers.get(0).setNextX(e.getX());
-                myPanzers.get(0).setNextY(e.getY());
-            }
-        }*/
+        
     }
 
 
