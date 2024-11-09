@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-class Crtaj extends JPanel implements MouseListener, ActionListener {
+class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotionListener {
     int numberOfEnemyPanzers;
     LinkedList<Panzer> myPanzers=new LinkedList<>();
     LinkedList<Panzer> enemyPanzers=new LinkedList<>();
@@ -38,6 +39,10 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     double angle = 0;
     double a = 500, b = 800;
     int enemySide=1;
+    
+    int viewX=0,viewY=0;
+    int mapSpeed=20;
+    int borders=40;
     
 
     int obsX[]=new int[5];
@@ -55,10 +60,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         
         this.enemyPanzers.push(new Panzer("Sherman", a, b, 500, 700, 50, 10));
 
-        /*this.myPanzers[0] = new Panzer("Tiger Panzer", x, y, 500, 650, 50, 10);
-        this.enemyPanzers[0] = new Panzer("Sherman", a, b, 500, 700, 50, 10);*/
-        
-        
         obs[0]=new Obstacles("SS",300, 400, false);
         obs[1]=new Obstacles("SS",350, 500, false);
         obs[2]=new Obstacles("SS",600, 50, false);
@@ -78,12 +79,12 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         }*/
         
         try {
-            background = ImageIO.read(new File("panzer/background.png"));
+            background = ImageIO.read(new File("panzer/background.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        setSize(1000, 1000);
+        addMouseMotionListener(this);
+        setSize(4000, 4000);
         setVisible(true);
         addMouseListener(this);
         setFocusable(true);
@@ -100,9 +101,26 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        //g.clearRect(0, 0, getWidth(), getHeight());
+        
+        /*viewX = Math.max(0, Math.min(viewX, background.getWidth() - getWidth()));
+        viewY = Math.max(0, Math.min(viewY, background.getHeight() - getHeight()));
+		*/
+        //System.out.println(viewX+"   "+viewY);
+        Graphics2D g2d = (Graphics2D) g;
+        g.translate(-viewX, -viewY);
+        
         if (background != null) {
-            g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
-        }
+        	int imageWidth = background.getWidth();
+            int imageHeight = background.getHeight();
+
+            for (int x = 0; x < 10000+ viewX; x += imageWidth) {
+                for (int y = 0; y < 10000 + viewY; y += imageHeight) {
+                    g2d.drawImage(background, x - viewX, y - viewY, null);
+                }
+            }
+         }
         for(int i=0;i<obs.length;i++) {
         	g.drawImage(images[i], obs[i].x, obs[i].y, 100, 200, null);
         }
@@ -114,7 +132,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         
         
         
-        Graphics2D g2d = (Graphics2D) g;
+        
         AffineTransform oldTransform = g2d.getTransform();
 
         try {
@@ -247,12 +265,13 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-    	//System.out.println(e.getX()+"    "+e.getY());
+    	int x=e.getX()+viewX;
+    	int y=e.getY()+viewY;
     	
     	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
 	    	for(int i=0;i<enemyPanzers.size();i++) {
-	    		if(e.getX()>enemyPanzers.get(i).getX() && e.getX()<enemyPanzers.get(i).getX()+100 &&
-	    				e.getY()>enemyPanzers.get(i).getY()-10 && e.getY()<enemyPanzers.get(i).getY()+100) {
+	    		if(x>enemyPanzers.get(i).getX() && x<enemyPanzers.get(i).getX()+100 &&
+	    				y>enemyPanzers.get(i).getY()-10 && y<enemyPanzers.get(i).getY()+100) {
 	    			playSound("audio/panzerFire.wav", 0);
 	    			for(int j=0;j<selected.size();j++) {
 		                selected.get(j).setState("shot");
@@ -261,8 +280,8 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 	    		}else {
 	    			for(int j=0;j<selected.size();j++) {
 		                selected.get(j).setState("move");
-		                selected.get(j).setNextX(e.getX());
-		                selected.get(j).setNextY(e.getY());
+		                selected.get(j).setNextX(x);
+		                selected.get(j).setNextY(y);
 	    			}
 	    			playSound("audio/panzerSelect1.wav", 0);
 	    		}
@@ -270,8 +289,8 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     	}
     	if(e.getButton()==MouseEvent.BUTTON1) {//SELECTING UNITS
 	    	for(int i=0;i<myPanzers.size();i++) {
-	    		if(e.getX()>myPanzers.get(i).getX() && e.getX()<myPanzers.get(i).getX()+100 &&
-	    		   e.getY()>myPanzers.get(i).getY()-10 && e.getY()<myPanzers.get(i).getY()+100) {
+	    		if(x>myPanzers.get(i).getX() && x<myPanzers.get(i).getX()+100 &&
+	    		   y>myPanzers.get(i).getY()-10 && y<myPanzers.get(i).getY()+100) {
 	    			selected.push(myPanzers.get(i));
 	    			playSound("audio/panzerSound.wav", 0);
 	    			//System.out.println(selected);
@@ -323,6 +342,39 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
+
+
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+    public void mouseMoved(MouseEvent e) {
+        int mouseX = e.getX();
+        int mouseY = e.getY();
+        ///System.out.println(e.getX());
+        if (mouseY < borders && viewY-mapSpeed>=0) {
+            viewY -= mapSpeed;
+        }
+        else if (mouseY > getHeight() - borders) {
+            viewY += mapSpeed;
+        }
+        if (mouseX < borders && viewX-mapSpeed>=0) {
+            viewX -= mapSpeed;
+        }
+        else if (mouseX > getWidth() - borders) {
+            viewX += mapSpeed;
+        }
+
+        repaint();
+    }
+    
+    
 }
 
 public class Field {
