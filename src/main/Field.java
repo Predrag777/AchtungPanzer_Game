@@ -30,9 +30,10 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     int numberOfEnemyPanzers;
     LinkedList<Panzer> myPanzers=new LinkedList<>();
     LinkedList<Panzer> enemyPanzers=new LinkedList<>();
+    LinkedList<Panzer> selected=new LinkedList<>();
     Timer t = new Timer(100, this);
-    boolean selected = false;
     double x = 100, y = 100;
+    double x1 = 400, y1 = 100;
     int counterForFire = 0;
     double angle = 0;
     double a = 500, b = 800;
@@ -49,7 +50,9 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
-        this.myPanzers.push(new Panzer("Tiger Panzer", x, y, 500, 650, 50, 10));
+        this.myPanzers.push(new Panzer("panzerBase", x, y, 500, 650, 50, 10));
+        this.myPanzers.push(new Panzer("panzerIV", x1, y1, 500, 650, 50, 10));
+        
         this.enemyPanzers.push(new Panzer("Sherman", a, b, 500, 700, 50, 10));
 
         /*this.myPanzers[0] = new Panzer("Tiger Panzer", x, y, 500, 650, 50, 10);
@@ -117,51 +120,42 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         }
         
         
-        BufferedImage panzer, enemy;
+        BufferedImage panzer, panzer2, enemy;
         String enemyImage="panzer/shermanBase.png";
         
         
         
         Graphics2D g2d = (Graphics2D) g;
-
         AffineTransform oldTransform = g2d.getTransform();
 
-        double centerX = x + 100;
-        double centerY = y + 50;
-
-        g2d.rotate(angle, centerX, centerY);
-
         try {
-            if (!myPanzers.get(0).getState().equalsIgnoreCase("shot"))
-                panzer = ImageIO.read(new File("panzer/panzerBase.png"));
-            else {
-                if (counterForFire < 15) {
-                    panzer = ImageIO.read(new File("panzer/panzerBase.png"));
-                } else if (counterForFire < 20) {
-                	if(counterForFire==16) {
-                		playSound("audio/tankShot1.wav",0);
-                	}
-                	if(targets.get(myPanzers.get(0)).getHealth()>0) {
-                		targets.get(myPanzers.get(0)).setHealth(0);
-                	}
-                    panzer = ImageIO.read(new File("panzer/panzerShot.png"));
-                } else {
-                    myPanzers.get(0).setState("move");
-                    counterForFire = -1;
-                    panzer = ImageIO.read(new File("panzer/panzerBase.png"));
-                }
-                counterForFire++;
-            }
-
-            g2d.drawImage(panzer, (int) x, (int) y, 200, 100, null);
-            g2d.setTransform(oldTransform);
+        	for(int i=0;i<myPanzers.size();i++) {
+        		if(myPanzers.get(i).getState().equalsIgnoreCase("shot") && myPanzers.get(i).getTarget()!=null) {
+        			Panzer target=myPanzers.get(i).getTarget();
+        			Panzer currPanzer=myPanzers.get(i);
+        			double deltaX=target.getX()-currPanzer.getX();
+        			double deltaY=target.getY()-currPanzer.getY();
+        			
+        			double angle=Math.atan2(deltaY, deltaX);
+        			
+        			double centerX = currPanzer.getX() + 100;
+        	        double centerY = currPanzer.getY() + 50;
+        	        g2d.rotate(angle, centerX,centerY);
+        		}
+        		g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(i).getName()+".png")), (int) myPanzers.get(i).getX(), (int) myPanzers.get(i).getY(), 200, 100, null);
+        		g2d.setTransform(oldTransform);
+        	}
+        	
+        	
+            /*g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(0).getName()+".png")), (int) myPanzers.get(0).getX(), (int) myPanzers.get(0).getY(), 200, 100, null);
+            g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(1).getName()+".png")), (int) myPanzers.get(1).getX(), (int) myPanzers.get(1).getY(), 200, 100, null);
+        	*/
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
         	for(int i=0;i<enemyPanzers.size();i++) {
-        		//System.out.println(enemyPanzers);
         		if(enemyPanzers.get(i)!=null) {
 		        	if(enemyPanzers.get(0).getHealth()<=0) {
 		        		enemyImage="panzer/broken3.png";
@@ -186,51 +180,42 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
         repaint();
 
-        if (myPanzers.get(0).getState().equalsIgnoreCase("shot")) {
-            double deltaX = a - x;
-            double deltaY = b - y;
-            angle = Math.atan2(deltaY, deltaX); 
-            return; 
-        }
-
-        double targetX = myPanzers.get(0).getNextX();
-        double targetY = myPanzers.get(0).getNextY();
-
-        double deltaX = targetX - x;
-        double deltaY = targetY - y;
-
-        double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if (distance < myPanzers.get(0).getSpeed()) {
-            x = targetX;
-            y = targetY;
-            myPanzers.get(0).setState("stop");
-            selected = false;
-            return;
-        }
-
-        double directionX = deltaX / distance;
-        double directionY = deltaY / distance;
-        angle = Math.atan2(directionY, directionX);
-        if(myPanzers.get(0).getState().equalsIgnoreCase("stop")) {
-        	directionX=0;
-        	directionY=0;
-        	targetX=x;
-        	targetY=y;
-        }
-        if(isCrashedOnObstacle()) {
-        	x-=directionX*50;
-        	y-=directionY*50;
-        	myPanzers.get(0).setState("stop");
-        	playSound("audio/panzerCrashOnObst.wav",0);
-        }else {
-	        x += directionX * myPanzers.get(0).getSpeed();
-	        y += directionY * myPanzers.get(0).getSpeed();
+        
+        for(int i=0;i<selected.size();i++) {
+	        System.out.println(selected.get(i));
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getX() >= a && e.getX() <= a + 100) {
+    	System.out.println(e.getX()+"    "+e.getY());
+    	
+    	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
+	    	for(int i=0;i<enemyPanzers.size();i++) {
+	    		if(e.getX()>enemyPanzers.get(i).getX() && e.getX()<enemyPanzers.get(i).getX()+100 &&
+	    				e.getY()>enemyPanzers.get(i).getY()-10 && e.getY()<enemyPanzers.get(i).getY()+100) {
+	    			playSound("audio/panzerFire.wav", 0);
+	    			for(int j=0;j<selected.size();j++) {
+		                selected.get(j).setState("shot");
+		                selected.get(j).setTarget(enemyPanzers.get(i));
+	    			}
+	    		}
+	    	}
+    	}
+    	if(e.getButton()==MouseEvent.BUTTON1) {//SELECTING UNITS
+	    	for(int i=0;i<myPanzers.size();i++) {
+	    		if(e.getX()>myPanzers.get(i).getX() && e.getX()<myPanzers.get(i).getX()+100 &&
+	    		   e.getY()>myPanzers.get(i).getY()-10 && e.getY()<myPanzers.get(i).getY()+100) {
+	    			selected.push(myPanzers.get(i));
+	    			playSound("audio/panzerSelect1.wav", 0);
+	    			System.out.println(selected);
+	    		}
+	    	}
+    	}
+    	if(e.getButton()==MouseEvent.BUTTON3) {//Unselect
+    		selected=new LinkedList<>();
+    	}
+        /*if (e.getX() >= a && e.getX() <= a + 100) {
             playSound("audio/panzerFire.wav", 0);
             myPanzers.get(0).setState("shot");
             System.out.println("Shus");
@@ -241,7 +226,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
             double deltaY = targetY - y;
 
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            System.out.println(distance+"    "+myPanzers.get(0).getFireRange());
+            //System.out.println(distance+"    "+myPanzers.get(0).getFireRange());
             if(distance>myPanzers.get(0).getFireRange()) {
             	System.out.println("KURAC");
             }else {
@@ -260,8 +245,9 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
                 myPanzers.get(0).setNextX(e.getX());
                 myPanzers.get(0).setNextY(e.getY());
             }
-        }
+        }*/
     }
+
 
     public static void playSound(String soundFile, int loopCount) {
         try {
