@@ -50,7 +50,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
-        this.myPanzers.push(new Panzer("panzerBase", x, y, 500, 650, 50, 10));
+        this.myPanzers.push(new Panzer("tiger", x, y, 500, 650, 50, 10));
         this.myPanzers.push(new Panzer("panzerIV", x1, y1, 500, 650, 50, 10));
         
         this.enemyPanzers.push(new Panzer("Sherman", a, b, 500, 700, 50, 10));
@@ -90,19 +90,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         setFocusTraversalKeysEnabled(false);
     }
 
-    public boolean isCrashedOnObstacle() {
-    	
-    	for(int i=0;i<obs.length;i++) {
-    		//System.out.println(this.x+" "+obs[i].x+"       "+this.y+" "+obs[i].y);
-    		if(this.x>=obs[i].x-100 && this.x<=obs[i].x
-    				&& this.y>=obs[i].y && this.y<=obs[i].y+100)//this.y<=obs[i].y && this.y>=obs[i].y+50)
-    			{
-    				System.out.println("CRASH!!!!!!!!!");
-    				return true;
-    			}
-    	}
-    	return false;
-    }
+    
     
     public boolean canNotShot() {
     	
@@ -120,7 +108,8 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         }
         
         
-        BufferedImage panzer, panzer2, enemy;
+        BufferedImage panzer, enemy;
+        
         String enemyImage="panzer/shermanBase.png";
         
         
@@ -129,6 +118,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         AffineTransform oldTransform = g2d.getTransform();
 
         try {
+        	String command="Base";
         	for(int i=0;i<myPanzers.size();i++) {
         		if(myPanzers.get(i).getState().equalsIgnoreCase("shot") && myPanzers.get(i).getTarget()!=null) {
         			Panzer target=myPanzers.get(i).getTarget();
@@ -141,6 +131,20 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         			double centerX = currPanzer.getX() + 100;
         	        double centerY = currPanzer.getY() + 50;
         	        g2d.rotate(angle, centerX,centerY);
+        	        
+        	        if(counterForFire<15) {
+        	        	command="Base";
+        	        }else if(counterForFire<20) {
+        	        	if(counterForFire==15) {
+        	        		playSound("audio/tankShot1.wav", 0);
+        	        	}
+        	        	command="Shot";
+        	        }else {
+        	        	command="Base";
+        	        	counterForFire=-1;
+        	        }
+        	        
+        	        counterForFire++;
         		}
         		if(myPanzers.get(i).getState().equalsIgnoreCase("move")) {
         			Panzer currPanzer=myPanzers.get(i);
@@ -156,14 +160,12 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         	        
         	        
         		}
-        		g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(i).getName()+".png")), (int) myPanzers.get(i).getX(), (int) myPanzers.get(i).getY(), 200, 100, null);
+        		if(!myPanzers.get(i).getState().equalsIgnoreCase("shot"))
+        			command="Base";
+        		g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(i).getName()+command+".png")), (int) myPanzers.get(i).getX(), (int) myPanzers.get(i).getY(), 200, 100, null);
         		g2d.setTransform(oldTransform);
         	}
         	
-        	
-            /*g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(0).getName()+".png")), (int) myPanzers.get(0).getX(), (int) myPanzers.get(0).getY(), 200, 100, null);
-            g2d.drawImage(ImageIO.read(new File("panzer/"+myPanzers.get(1).getName()+".png")), (int) myPanzers.get(1).getX(), (int) myPanzers.get(1).getY(), 200, 100, null);
-        	*/
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -245,7 +247,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-    	System.out.println(e.getX()+"    "+e.getY());
+    	//System.out.println(e.getX()+"    "+e.getY());
     	
     	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
 	    	for(int i=0;i<enemyPanzers.size();i++) {
@@ -272,7 +274,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
 	    		   e.getY()>myPanzers.get(i).getY()-10 && e.getY()<myPanzers.get(i).getY()+100) {
 	    			selected.push(myPanzers.get(i));
 	    			playSound("audio/panzerSound.wav", 0);
-	    			System.out.println(selected);
+	    			//System.out.println(selected);
 	    		}
 	    	}
     	}
@@ -295,6 +297,22 @@ class Crtaj extends JPanel implements MouseListener, ActionListener {
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+    }
+    
+    public boolean isCrashedOnObstacle() {
+    	
+    	for(int i=0;i<obs.length;i++) {
+    		for(int j=0;j<myPanzers.size();j++) {
+    			Panzer curr=myPanzers.get(j);
+    		if(curr.getX()>=obs[i].x-100 && curr.getX()<=obs[i].x
+    				&& curr.getY()>=obs[i].y && curr.getY()<=obs[i].y+100)//this.y<=obs[i].y && this.y>=obs[i].y+50)
+    			{
+    				System.out.println("CRASH!!!!!!!!!");
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
     }
 
     @Override
