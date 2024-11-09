@@ -44,15 +44,12 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     int mapSpeed=20;
     int borders=40;
     
-
-    int obsX[]=new int[5];
-    int obsY[]=new int[5];
     Random rand = new Random();
     HashMap<Panzer, Panzer> targets=new HashMap<>();
-    Obstacles[] obs=new Obstacles[5];
+    Obstacles[] obs=new Obstacles[15];
     BufferedImage background;
     BufferedImage images[];
-    String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
+    String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
         this.myPanzers.push(new Panzer("tiger", x, y, 500, 650, 50, 10));
@@ -65,18 +62,35 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         obs[2]=new Obstacles("SS",600, 50, false);
         obs[3]=new Obstacles("SS",50, 600, false);
         obs[4]=new Obstacles("SS",800, 700, false);
+        
+        obs[5]=new Obstacles("SS",1000, 400, false);
+        obs[6]=new Obstacles("SS",1500, 1500, false);
+        obs[7]=new Obstacles("SS",1600, 150, false);
+        obs[8]=new Obstacles("SS",1550, 1500, false);
+        obs[9]=new Obstacles("SS",1650, 1000, false);
+        
+        obs[10]=new Obstacles("SS",2500, 1400, false);
+        obs[11]=new Obstacles("SS",2850, 2500, false);
+        obs[12]=new Obstacles("SS",1600, 850, false);
+        obs[13]=new Obstacles("SS",2500, 500, false);
+        obs[14]=new Obstacles("SS",2500, 2000, false);
         BufferedImage[] obstacles= {ImageIO.read(new File("panzer/broken2.png")),
 					        		ImageIO.read(new File("panzer/broken1.png")),
 					        		ImageIO.read(new File("panzer/broken3.png")),
 					        		ImageIO.read(new File("panzer/broken1.png")),
-					        		ImageIO.read(new File("panzer/broken3.png"))};
+					        		ImageIO.read(new File("panzer/broken3.png")),
+					        		ImageIO.read(new File("panzer/broken2.png")),
+					        		ImageIO.read(new File("panzer/broken1.png")),
+					        		ImageIO.read(new File("panzer/broken3.png")),
+					        		ImageIO.read(new File("panzer/broken1.png")),
+					        		ImageIO.read(new File("panzer/broken3.png")),
+					        		
+					        		ImageIO.read(new File("panzer/buildings/house1.png")),
+					        		ImageIO.read(new File("panzer/buildings/house2.png")),
+					        		ImageIO.read(new File("panzer/buildings/house3.png")),
+					        		ImageIO.read(new File("panzer/buildings/house4.png")),
+					        		ImageIO.read(new File("panzer/buildings/house5.png"))};
         images=obstacles;
-        /*for (int i = 0; i < obsX.length; i++) {
-            obsX[i] = rand.nextInt(901) + 100; 
-            obsY[i] = rand.nextInt(800)+100;
-            
-            obs[i]=new Obstacles("SS",(int)obsX[i], (int)obsY[i], false);
-        }*/
         
         try {
             background = ImageIO.read(new File("panzer/background.jpg"));
@@ -245,16 +259,11 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
                 	myPanzers.get(i).setX(currPanzer.getX()-directionX*50);
                 	myPanzers.get(i).setY(currPanzer.getY()-directionY*50);
                 	myPanzers.get(i).setState("stop");
-                	/*x-=directionX*50;
-                	y-=directionY*50;
-                	myPanzers.get(0).setState("stop");*/
                 	playSound("audio/panzerCrashOnObst.wav",0);
                 }else {
                 	myPanzers.get(i).setX(currPanzer.getX()+directionX*currPanzer.getSpeed());
                 	myPanzers.get(i).setY(currPanzer.getY()+directionY*currPanzer.getSpeed());
                 	
-        	        /*x += directionX * myPanzers.get(0).getSpeed();
-        	        y += directionY * myPanzers.get(0).getSpeed();*/
                 }
     	        
     	        
@@ -293,7 +302,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 	    		   y>myPanzers.get(i).getY()-10 && y<myPanzers.get(i).getY()+100) {
 	    			selected.push(myPanzers.get(i));
 	    			playSound("audio/panzerSound.wav", 0);
-	    			//System.out.println(selected);
 	    		}
 	    	}
     	}
@@ -357,7 +365,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     public void mouseMoved(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
-        ///System.out.println(e.getX());
         if (mouseY < borders && viewY-mapSpeed>=0) {
             viewY -= mapSpeed;
         }
