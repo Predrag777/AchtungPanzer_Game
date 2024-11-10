@@ -154,7 +154,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         try {
         	for(int i=0;i<infantry.size();i++) {
         		try {
-        			System.out.println(infantry.get(i).getState());
+        			//System.out.println(infantry.get(i).getState());
         			if(infantry.get(i).getState().equalsIgnoreCase("shot"))
         				infantryAnimationShot(infantry.get(i));
         			/*if(infantry.get(i).getState().equalsIgnoreCase("move"))
@@ -245,7 +245,11 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     public void actionPerformed(ActionEvent e) {
         repaint();
         for(int i=0;i<infantry.size();i++) {
-        	infantryAnimationMove(infantry.get(i));
+        	if(infantry.get(i).getState().equalsIgnoreCase("move"))
+        		infantryAnimationMove(infantry.get(i));
+        	if(infantry.get(i).getState().equalsIgnoreCase("shot")) {
+        		infantryAnimationShot(infantry.get(i));
+        	}
         }
 
         
@@ -297,32 +301,42 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     	int x=e.getX()+viewX;
     	int y=e.getY()+viewY;
     	//Infantry commands
-    	/*if(e.getButton()==MouseEvent.BUTTON1) {
-    		if(infSelected.size()>0) {
-    			for(int i=0;i<infSelected.size();i++) {
-    				
-    				infSelected.get(i).setNextX(x);
-    				infSelected.get(i).setNextY(y);
-    				playSound("audio/Infantry/heer/move.wav",0);
-    			}
-    		}*/
-    		for(int i=0;i<infantry.size();i++) {
-    			if(x>infantry.get(i).getX() && x<infantry.get(i).getX()+100 &&
+    	if(e.getButton()==MouseEvent.BUTTON1) {
+	    	if(infSelected.size()>0) {
+	    		for(int i=0;i<enemyPanzers.size();i++) {
+		    		if(x>enemyPanzers.get(i).getX() && x<enemyPanzers.get(i).getX()+40 &&
+		    				y>enemyPanzers.get(i).getY()-10 && y<enemyPanzers.get(i).getY()+100) {
+		    			playSound("audio/Infantry/heer/covered.wav", 0);
+		    			for(int j=0;j<infSelected.size();j++) {
+		    				infSelected.get(j).setState("shot");
+		    				infSelected.get(j).setTargetPanzer(enemyPanzers.get(i));
+		    			}
+		    		}
+		    	}
+	    	}
+			for(int i=0;i<infantry.size();i++) {
+				if(x>infantry.get(i).getX() && x<infantry.get(i).getX()+100 &&
 	    		   y>infantry.get(i).getY()-10 && y<infantry.get(i).getY()+100) {
-    				playSound("audio/Infantry/heer/selected.wav",0);
-    				
-    				infSelected.push(infantry.get(i));
-    			}else if(infSelected.size()>0) {
-    				infSelected.get(i).setNextX(x);
-    				infSelected.get(i).setNextY(y);
-    				infantry.get(i).setState("move");
-    				playSound("audio/Infantry/heer/move.wav",0);
-    		}
-    		
-    		
+					playSound("audio/Infantry/heer/selected.wav",0);
+					
+					infSelected.push(infantry.get(i));
+				}else if(infSelected.size()>0) {
+					for(int j=0;j<enemyPanzers.size();j++) {
+						if(!(x>enemyPanzers.get(i).getX() && x<enemyPanzers.get(i).getX()+40 &&
+			    				y>enemyPanzers.get(i).getY()-10 && y<enemyPanzers.get(i).getY()+100)) {
+							infSelected.get(i).setNextX(x);
+							infSelected.get(i).setNextY(y);
+							infantry.get(i).setState("move");
+							playSound("audio/Infantry/heer/move.wav",0);
+						}
+					}
+					
+				}
+	    		
+	    		
+	    	}
+    	
     	}
-    	
-    	
     	//Panzer commands
     	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
 	    	for(int i=0;i<enemyPanzers.size();i++) {
@@ -422,14 +436,14 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         double directionY = deltaY / distance;
         angle = Math.atan2(directionY, directionX);
         
-        if (distance < myPanzers.get(0).getSpeed()) {
+        if (distance < 10) {
         	inf.setX(inf.getNextX());
         	inf.setY(inf.getNextY());
             inf.setState("stop");
             return;
         }
-        inf.setX(inf.getX()+directionX*2);
-    	inf.setY(inf.getY()+directionY*2);
+        inf.setX(inf.getX()+directionX*10);
+    	inf.setY(inf.getY()+directionY*10);
         
         
     	if(infMove<5) {
