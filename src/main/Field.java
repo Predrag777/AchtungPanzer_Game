@@ -160,7 +160,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         
         String enemyImage="panzer/shermanBase.png";
         
-        
+        Random rand=new Random();
         
         
         AffineTransform oldTransform = g2d.getTransform();
@@ -216,7 +216,19 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         		
         		g2d.drawImage(ImageIO.read(new File("panzer/"+myUnits.get(i).getName()+myUnits.get(i).getCommand()+".png")), (int) myUnits.get(i).getX(), (int) myUnits.get(i).getY(), 200, 100, null);
         		g2d.setTransform(oldTransform);
+        		
         	}
+        		if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Infantry) {
+        			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
+        			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
+        			if(myUnits.get(i).getFireRate()<10)
+        				g2d.drawImage(ImageIO.read(new File("specEffects/rifleHit.png")), newX, newY, 45,45,null);
+        		}else if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Panzer) {
+        			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
+        			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
+        			if(myUnits.get(i).getFireRate()<10)
+        				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), newX, newY, 45,45,null);
+        		}
         	}
         	
         } catch (IOException e) {
@@ -317,9 +329,9 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 	    			
 	    			
 	    			for(int j=0;j<selected.size();j++) {
-	    				if(selected.get(i) instanceof Panzer)
+	    				if(selected.get(j) instanceof Panzer)
 	    					playSound("audio/panzerFire.wav", 0);
-	    				else if(selected.get(i) instanceof Infantry)
+	    				else if(selected.get(j) instanceof Infantry)
 	    					playSound("audio/Infantry/heer/shot.wav", 0);
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyUnits.get(i));
