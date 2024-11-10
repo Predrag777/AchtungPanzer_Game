@@ -59,7 +59,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     HashMap<Panzer, Panzer> targets=new HashMap<>();
     Obstacles[] obs=new Obstacles[15];
     BufferedImage background;
-    BufferedImage images[];
+    //BufferedImage images[];
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
@@ -70,7 +70,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,25, 30,10, 5));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,25, 30,10, 5));
         
-        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 30,10, 5));
+        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 15,10, 5));
        
         
         this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10));
@@ -78,40 +78,24 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         this.enemyUnits.push(new Infantry("Rifle", 400, 800, 20,25, 30,10, 5));
         
         
-        obs[0]=new Obstacles("SS",300, 400, false);
-        obs[1]=new Obstacles("SS",350, 500, false);
-        obs[2]=new Obstacles("SS",600, 50, false);
-        obs[3]=new Obstacles("SS",50, 600, false);
-        obs[4]=new Obstacles("SS",800, 700, false);
+        obs[0]=new Obstacles("panzer/broken1.png",300, 400, false);
+        obs[1]=new Obstacles("panzer/broken2.png",350, 500, false);
+        obs[2]=new Obstacles("panzer/broken3.png",600, 50, false);
+        obs[3]=new Obstacles("panzer/broken6.png",50, 600, false);
+        obs[4]=new Obstacles("panzer/broken4.png",800, 700, false);
         
-        obs[5]=new Obstacles("SS",1000, 400, false);
-        obs[6]=new Obstacles("SS",1500, 1500, false);
-        obs[7]=new Obstacles("SS",1600, 150, false);
-        obs[8]=new Obstacles("SS",1550, 1500, false);
-        obs[9]=new Obstacles("SS",1650, 1000, false);
+        obs[5]=new Obstacles("panzer/broken5.png",1000, 400, false);
+        obs[6]=new Obstacles("panzer/broken5.png",1500, 1500, false);
+        obs[7]=new Obstacles("panzer/broken5.png",1600, 150, false);
+        obs[8]=new Obstacles("panzer/broken5.png",1550, 1500, false);
+        obs[9]=new Obstacles("panzer/buildings/house1.png",1650, 1000, false);
         
-        obs[10]=new Obstacles("SS",2500, 1400, false);
-        obs[11]=new Obstacles("SS",2850, 2500, false);
-        obs[12]=new Obstacles("SS",1600, 850, false);
-        obs[13]=new Obstacles("SS",2500, 500, false);
-        obs[14]=new Obstacles("SS",2500, 2000, false);
-        BufferedImage[] obstacles= {ImageIO.read(new File("panzer/broken2.png")),
-					        		ImageIO.read(new File("panzer/broken1.png")),
-					        		ImageIO.read(new File("panzer/broken3.png")),
-					        		ImageIO.read(new File("panzer/broken1.png")),
-					        		ImageIO.read(new File("panzer/broken3.png")),
-					        		ImageIO.read(new File("panzer/broken2.png")),
-					        		ImageIO.read(new File("panzer/broken1.png")),
-					        		ImageIO.read(new File("panzer/broken3.png")),
-					        		ImageIO.read(new File("panzer/broken1.png")),
-					        		ImageIO.read(new File("panzer/broken3.png")),
-					        		
-					        		ImageIO.read(new File("panzer/buildings/house1.png")),
-					        		ImageIO.read(new File("panzer/buildings/house2.png")),
-					        		ImageIO.read(new File("panzer/buildings/house3.png")),
-					        		ImageIO.read(new File("panzer/buildings/house4.png")),
-					        		ImageIO.read(new File("panzer/buildings/house5.png"))};
-        images=obstacles;
+        obs[10]=new Obstacles("panzer/buildings/house2.png",2500, 1400, false);
+        obs[11]=new Obstacles("panzer/buildings/house3.png",2850, 2500, false);
+        obs[12]=new Obstacles("panzer/buildings/house4.png",1600, 850, false);
+        obs[13]=new Obstacles("panzer/buildings/house1.png",2500, 500, false);
+        obs[14]=new Obstacles("panzer/buildings/house1.png",2500, 2000, false);
+        
         
         try {
             background = ImageIO.read(new File("panzer/background.jpg"));
@@ -152,7 +136,12 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
          }
 
         for(int i=0;i<obs.length;i++) {
-        	g.drawImage(images[i], obs[i].x, obs[i].y, 100, 200, null);
+        	try {
+				g.drawImage(ImageIO.read(new File(obs[i].name)), obs[i].x, obs[i].y, 100, 200, null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         
         
@@ -211,7 +200,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         	        
         	        g2d.rotate(angle, centerX,centerY);
         	        
-        	        
         		}
         		
         		g2d.drawImage(ImageIO.read(new File("panzer/"+myUnits.get(i).getName()+myUnits.get(i).getCommand()+".png")), (int) myUnits.get(i).getX(), (int) myUnits.get(i).getY(), 200, 100, null);
@@ -221,13 +209,17 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         		if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Infantry) {
         			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
         			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
-        			if(myUnits.get(i).getFireRate()<10)
+        			if(myUnits.get(i).getFireRate()<10) {
+        				myUnits.get(i).getTarget().setHealth(0);
         				g2d.drawImage(ImageIO.read(new File("specEffects/rifleHit.png")), newX, newY, 45,45,null);
+        			}
         		}else if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Panzer) {
         			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
         			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
-        			if(myUnits.get(i).getFireRate()<10)
-        				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), newX, newY, 45,45,null);
+        			if(myUnits.get(i).getFireRate()<10) {
+        				myUnits.get(i).getTarget().setHealth(0);
+        				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), newX, newY, 100,100,null);
+        			}
         		}
         	}
         	
@@ -237,11 +229,15 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 
         try {
         	for(int i=0;i<enemyUnits.size();i++) {
-        		if(enemyUnits.get(i) instanceof Infantry)
-        			g.drawImage(ImageIO.read(new File("infantry/US/"+enemyUnits.get(i).getCommand()+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 50, 70, null);
-        		else if(enemyUnits.get(i) instanceof Panzer) 
+        		if(enemyUnits.get(i) instanceof Infantry) {
+        			
+        			if(enemyUnits.get(i).getHealth()<=0)
+        				g.drawImage(ImageIO.read(new File("infantry/US/"+enemyUnits.get(i).getCommand()+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 200, 50, null);
+        			else
+        				g.drawImage(ImageIO.read(new File("infantry/US/"+enemyUnits.get(i).getCommand()+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 50, 70, null);
+        		}else if(enemyUnits.get(i) instanceof Panzer) {
         			g.drawImage(ImageIO.read(new File("panzer/"+enemyUnits.get(i).getCommand()+enemyUnits.get(i).getName()+".png")), (int) a, (int) b, 200, 100*enemySide, null);
-        		
+        		}
         	}
 
         } catch (IOException e) {
@@ -256,16 +252,47 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         repaint();
         for(int i=0;i<myUnits.size();i++) {
 	        	if(myUnits.get(i) instanceof Infantry) {
-	        	if(myUnits.get(i).getState().equalsIgnoreCase("move"))
-	        		infantryAnimationMove((Infantry)myUnits.get(i));
-	        	if(myUnits.get(i).getState().equalsIgnoreCase("shot")) {
-	        		infantryAnimationShot((Infantry)myUnits.get(i));
-	        		
-	        	}
+		        	if(myUnits.get(i).getState().equalsIgnoreCase("move"))
+		        		infantryAnimationMove((Infantry)myUnits.get(i));
+		        	if(myUnits.get(i).getState().equalsIgnoreCase("shot")) {
+		        		infantryAnimationShot((Infantry)myUnits.get(i));
+		        		
+		        	}
+		        	if(myUnits.get(i).getState().equalsIgnoreCase("stop")) {
+		        		myUnits.get(i).setCommand("stand");
+		        	}
         	}
         }
 
-        
+        for(int i=0;i<enemyUnits.size();i++) {
+        	if(enemyUnits.get(i) instanceof Infantry && enemyUnits.get(i).getHealth()<=0) {
+        		Infantry inf=(Infantry) enemyUnits.get(i);
+        		enemyUnits.get(i).setCommand("");
+        		if(inf.deathCounter>15)
+        			enemyUnits.get(i).setName("death1");
+        		else if(inf.deathCounter>10)
+        			enemyUnits.get(i).setName("death2");
+        		else if(inf.deathCounter>0)
+        			enemyUnits.get(i).setName("death3");
+        		else {
+        			enemyUnits.remove(i);
+        			break;
+        		}
+        		if(enemyUnits.get(i)!=null)
+        			inf.deathCounter-=1;
+        	}else if(enemyUnits.get(i) instanceof Panzer && enemyUnits.get(i).getHealth()<=0) {
+        		Panzer panzer=(Panzer) enemyUnits.get(i);
+        		enemyUnits.get(i).setCommand("");
+        		if(panzer.deathCounter>5)
+        			enemyUnits.get(i).setName("broken4");
+        		else {
+        			enemyUnits.remove(i);
+        			break;
+        		}
+        		if(enemyUnits.get(i)!=null)
+        			panzer.deathCounter-=1;
+        	}
+        }
         for(int i=0;i<myUnits.size();i++) {
         	if(myUnits.get(i) instanceof Panzer) {
         	Panzer currPanzer=(Panzer)myUnits.get(i);
@@ -391,6 +418,8 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         }
     }
     
+    
+    
     public boolean isCrashedOnObstacle() {
     	
     	for(int i=0;i<obs.length;i++) {
@@ -423,6 +452,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     }
     
     public void infantryAnimationShot(Infantry inf) {
+    	System.out.println(inf.getFireRate());
     	
     	if(inf.getState().equalsIgnoreCase("shot")) {
     		if(inf.getFireRate()>20) {
