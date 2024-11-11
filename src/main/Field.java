@@ -29,15 +29,11 @@ import javax.swing.Timer;
 
 class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotionListener {
     int numberOfEnemyPanzers;
-    //LinkedList<Panzer> myPanzers=new LinkedList<>();
-    //LinkedList<Infantry> infantry=new LinkedList<>();
     
     LinkedList<Unit> myUnits=new LinkedList<>();
     LinkedList<Unit> enemyUnits=new LinkedList<>();
-    
-    
     LinkedList<Unit> selected=new LinkedList<>();
-    //LinkedList<Infantry> infSelected=new LinkedList<>();
+    
     Timer t = new Timer(100, this);
     double x = 100, y = 100;
     double x1 = 400, y1 = 100;
@@ -66,17 +62,18 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 50, 10));
         this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 40, 50, 10));
         //name,  x,  y,  health,  fireRange, fireRate,  damage,  speed
-        this.myUnits.push(new Infantry("Rifle", 50,50, 20,25, 30,10, 5));
-        this.myUnits.push(new Infantry("Rifle", 50,100, 20,25, 30,10, 5));
-        this.myUnits.push(new Infantry("Rifle", 50,150, 20,25, 30,10, 5));
+        this.myUnits.push(new Infantry("Rifle", 50,50, 20,700, 30,10, 5));
+        this.myUnits.push(new Infantry("Rifle", 50,100, 20,700, 30,10, 5));
+        this.myUnits.push(new Infantry("Rifle", 50,150, 20,700, 30,10, 5));
         
-        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 15,10, 5));
+       // this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 15,10, 5));
        
         
         this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10));
 
-        this.enemyUnits.push(new Infantry("Rifle", 400, 800, 20,25, 30,10, 5));
-        
+        this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,650, 30,10, 5));
+        this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,650, 30,10, 5));
+        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,650, 30,10, 5));
         
         obs[0]=new Obstacles("panzer/broken1.png",300, 400,100, 200, false);
         obs[1]=new Obstacles("panzer/broken2.png",350, 500,100, 200, false);
@@ -133,10 +130,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 
     
     
-    public boolean canNotShot() {
-    	
-    	return true;
-    }
+    
     
     @Override
     public void paintComponent(Graphics g) {
@@ -184,7 +178,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 	    				g.drawImage(ImageIO.read(new File("infantry/Heer/"+myUnits.get(i).getCommand()+""+myUnits.get(i).getName()+".png")), (int)myUnits.get(i).getX(), (int)myUnits.get(i).getY(), 50*infSide, 70, null);
         			}
         		} catch (IOException e) {
-    				// TODO Auto-generated catch block
     				e.printStackTrace();
     			}
         		
@@ -229,15 +222,30 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         		if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Infantry) {
         			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
         			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
-        			if(myUnits.get(i).getFireRate()<10) {
-        				myUnits.get(i).getTarget().setHealth(0);
+        			if(myUnits.get(i).getFireRate()==10) {
+        				if((int)myUnits.get(i).getTarget().getX()-newX<20)
+        					myUnits.get(i).getTarget().setHealth(0);
         				g2d.drawImage(ImageIO.read(new File("specEffects/rifleHit.png")), newX, newY, 45,45,null);
         			}
         		}else if(myUnits.get(i).getTarget()!=null && myUnits.get(i) instanceof Panzer) {
-        			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
-        			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
-        			if(myUnits.get(i).getFireRate()<10) {
-        				myUnits.get(i).getTarget().setHealth(0);
+        			int newX=(int)myUnits.get(i).getTarget().getX()-rand.nextInt(0,80);
+        			int newY=(int)myUnits.get(i).getTarget().getY()-rand.nextInt(0,80);
+        			if(myUnits.get(i).getFireRate()==10) {
+        				//System.out.println(myUnits.get(i).getTarget().getHealth()+"   "+((int)myUnits.get(i).getTarget().getX()-newX));
+        				if((int)myUnits.get(i).getTarget().getX()-newX<=10) {
+        					//System.out.println("KILL");
+        					myUnits.get(i).getTarget().setHealth(myUnits.get(i).getTarget().getHealth()-1000);
+        				}
+        				else if((int)myUnits.get(i).getTarget().getX()-newX<20) {
+        					myUnits.get(i).getTarget().setHealth(myUnits.get(i).getTarget().getHealth()-200);
+        					//System.out.println("HIT DEADLY");
+        				}
+        				else if((int)myUnits.get(i).getTarget().getX()-newX<30) {
+        					myUnits.get(i).getTarget().setHealth(myUnits.get(i).getTarget().getHealth()-100);
+        					//System.out.println("HIT");
+        				}else {
+        				//	System.out.println("MISS");
+        				}
         				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), newX, newY, 100,100,null);
         			}
         		}
@@ -261,6 +269,15 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         			
         			double centerX = currPanzer.getX() + 100;
         	        double centerY = currPanzer.getY() + 50;
+
+        	        
+        	        if(enemyUnits.get(i).getFireRate()==10) {
+        	        	int newX=(int)enemyUnits.get(i).getTarget().getX()-rand.nextInt(0,50);
+            			int newY=(int)enemyUnits.get(i).getTarget().getY()-rand.nextInt(0,50);
+            			
+        				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), newX, newY, 100,100,null);
+
+        	        }
         	        g2d.rotate(angle, centerX,centerY);
         		}
         		
@@ -299,24 +316,28 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
             viewX += mapSpeed;
         }
         
+        
+        
         for(int i=0;i<myUnits.size();i++) {
-	        	if(myUnits.get(i) instanceof Infantry) {
-		        	if(myUnits.get(i).getState().equalsIgnoreCase("move"))
-		        		infantryAnimationMove((Infantry)myUnits.get(i));
-		        	if(myUnits.get(i).getState().equalsIgnoreCase("shot")) {
-		        		infantryAnimationShot((Infantry)myUnits.get(i));
-		        		
-		        	}
-		        	if(myUnits.get(i).getState().equalsIgnoreCase("stop")) {
-		        		myUnits.get(i).setCommand("stand");
-		        	}
+        	if(myUnits.get(i) instanceof Infantry) {
+	        	if(myUnits.get(i).getState().equalsIgnoreCase("move"))
+	        		infantryAnimationMove((Infantry)myUnits.get(i));
+	        	if(myUnits.get(i).getState().equalsIgnoreCase("shot")) {
+	        		infantryAnimationShot((Infantry)myUnits.get(i));
+	        		
+	        	}
+	        	if(myUnits.get(i).getState().equalsIgnoreCase("stop")) {
+	        		myUnits.get(i).setCommand("stand");
+	        	}
         	}
         }
 
         for(int i=0;i<enemyUnits.size();i++) {
-        	if(enemyUnits.get(i) instanceof Panzer && enemyUnits.get(i).getState().equalsIgnoreCase("shot")) {
+        	if(enemyUnits.get(i) instanceof Infantry) {
+    			infantryAnimationShot((Infantry)enemyUnits.get(i));
+    		}
+        	else if(enemyUnits.get(i) instanceof Panzer && enemyUnits.get(i).getState().equalsIgnoreCase("shot")) {
         		panzerAnimationShot((Panzer)enemyUnits.get(i));
-        		
         		
         	}
         	
@@ -404,13 +425,19 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         	}
         }
         for(int i=0;i<enemyUnits.size();i++) {
+        	
         	Unit newTarget=autoShot(enemyUnits.get(i), myUnits);
         	
         	if(newTarget!=null && enemyUnits.get(i).getTarget()==null && !enemyUnits.get(i).getState().equalsIgnoreCase("move")) {
-        		System.out.println(enemyUnits.get(i));
+        		//System.out.println(enemyUnits.get(i));
         		enemyUnits.get(i).setState("shot");
         		
         		enemyUnits.get(i).setTarget(newTarget);
+        	}
+        	if(enemyUnits.get(i).getTarget()!=null && !checkShotingRange(enemyUnits.get(i), enemyUnits.get(i).getTarget())) {
+        		enemyUnits.get(i).setTarget(null);
+        		enemyUnits.get(i).setState("stop");
+        		enemyUnits.get(i).setCommand("Base");
         	}
         }
         
@@ -425,9 +452,8 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     	
     	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
 	    	for(int i=0;i<enemyUnits.size();i++) {
-	    		//System.out.println((x>enemyUnits.get(i).getX()-20)+"   "+ (x<enemyUnits.get(i).getX()+70) +"  "+(y>enemyUnits.get(i).getY()-30) +"   "+(y<enemyUnits.get(i).getY()+100));
-	    		if(((x>enemyUnits.get(i).getX()-20 && x<enemyUnits.get(i).getX()+70 &&
-	    				y>enemyUnits.get(i).getY()-30 && y<enemyUnits.get(i).getY()+100))) {
+	    		if(((x>enemyUnits.get(i).getX()-20 && x<enemyUnits.get(i).getX()+100 &&
+	    				y>enemyUnits.get(i).getY()-100 && y<enemyUnits.get(i).getY()+100))) {
 	    			
 	    			
 	    			for(int j=0;j<selected.size();j++) {
@@ -459,7 +485,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     	}
     	if(e.getButton()==MouseEvent.BUTTON1) {//SELECTING UNITS
 	    	for(int i=0;i<myUnits.size();i++) {
-	    		//if(myUnits.get(i) instanceof Panzer) {
 		    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+100 &&
 		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100) {
 		    			selected.push(myUnits.get(i));
@@ -468,7 +493,6 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
 		    			else if(myUnits.get(i) instanceof Infantry)
 		    				playSound("audio/Infantry/heer/selected.wav", 0);
 		    		}
-	    		//}
 	    	}
     	}
     	
@@ -510,15 +534,13 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     	}
     	return false;
     }
-    
+
     public Unit autoShot(Unit unit, LinkedList<Unit> targetUnit) {
     	for(int i=0;i<targetUnit.size();i++) {
     		
     		double deltaX = targetUnit.get(i).getX() - unit.getX();
             double deltaY = targetUnit.get(i).getY() - unit.getY();
-
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    		
     		if(distance<unit.getFireRange()) {
     			return targetUnit.get(i);
     		}
