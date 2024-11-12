@@ -61,14 +61,14 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     public Crtaj() throws IOException {
         t.start();
         this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 100, 10, 60));
-        this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 70, 50, 10, 60));
+        this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 40, 50, 10, 60));
         //name,  x,  y,  health,  fireRange, fireRate,  damage,  speed
         this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
         //this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 30,10, 5, 30, 10));
-       
+        
         
         this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10, 80));
 
@@ -286,11 +286,12 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
             			else
             				enemyInfSide=1;
         			}
-        			if(enemyUnits.get(i).getHealth()<=0) {
-        				g2d.drawImage(ImageIO.read(new File("infantry/US/"+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 200, 50, null);
-        			}else {
+        			//if(enemyUnits.get(i).getHealth()<=0) {
+        			//	g2d.drawImage(ImageIO.read(new File("infantry/US/"+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 200, 50, null);
+        			//}else {
+        			if(enemyUnits.get(i).getHealth()>0)
         				g2d.drawImage(ImageIO.read(new File("infantry/US/"+enemyUnits.get(i).getCommand()+""+enemyUnits.get(i).getName()+".png")), (int)enemyUnits.get(i).getX(), (int)enemyUnits.get(i).getY(), 50*enemyInfSide, 70, null);
-        			}
+        			//}
         		}else if(enemyUnits.get(i) instanceof Panzer) {
         			g2d.drawImage(ImageIO.read(new File("panzer/"+enemyUnits.get(i).getCommand()+enemyUnits.get(i).getName()+".png")), (int) a, (int) b, 200, 100*enemySide, null);
         		}
@@ -460,7 +461,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         		myUnits.get(i).setTarget(newTarget);
         	}
         }
-        for(int i=0;i<enemyUnits.size();i++) {
+        /*for(int i=0;i<enemyUnits.size();i++) {
         	
         	Unit newTarget=autoShot(enemyUnits.get(i), myUnits);
         	
@@ -474,7 +475,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
         		enemyUnits.get(i).setState("stop");
         		enemyUnits.get(i).setCommand("Base");
         	}
-        }
+        }*/
         
     }
 
@@ -623,6 +624,7 @@ class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotion
     }
     
      public void panzerAnimationShot(Panzer panzer) {
+    	 System.out.println(panzer.getName()+"  "+panzer.getState()+"   "+panzer.getFireRate());
     	if(panzer.getState().equalsIgnoreCase("shot")) {
     		if(panzer.getFireRate()>10) {
     			panzer.setCommand("Base");
