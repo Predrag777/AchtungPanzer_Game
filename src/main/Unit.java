@@ -13,10 +13,11 @@ public class Unit {
 	private String command;
 	private String state;
 	private String side;
+	private int shootingError;
 	
 	private Unit target;
 	
-	public Unit(String name, double x, double y, int health, int fireRange, int fireRate, int damage, int speed) {
+	public Unit(String name, double x, double y, int health, int fireRange, int fireRate, int damage, int speed, int shootingError) {
 		this.name=name;
 		this.health=health;
 		this.x=x;
@@ -36,6 +37,20 @@ public class Unit {
 	
 	
 	
+	public int getShootingError() {
+		return shootingError;
+	}
+
+
+
+
+	public void setShootingError(int shootingError) {
+		this.shootingError = shootingError;
+	}
+
+
+
+
 	public String getCommand() {
 		return command;
 	}
