@@ -67,8 +67,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
-        //this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,25, 30,10, 5, 30, 10));
-        
+        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
+        //this.myUnits.push(new Infantry("Mortar",100,50, 20,500, 30,10, 5, 30, 25));
         
         this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10, 80));
 
@@ -317,7 +317,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	
         	Unit newTarget=autoShot(myUnits.get(i), enemyUnits);
         	
-    		if(newTarget!=null && myUnits.get(i).getTarget()==null && !myUnits.get(i).getState().equalsIgnoreCase("move") && myUnits.get(i).getFireRate()>10) {
+    		if(newTarget!=null && myUnits.get(i).getTarget()==null && !myUnits.get(i).getState().equalsIgnoreCase("move")) {
     			myUnits.get(i).setTarget(newTarget);
     			myUnits.get(i).setState("shot");
     		}
@@ -328,12 +328,15 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         			//////SOUND FOR MISS THE RANGE
         			myUnits.get(i).setState("stop");
         			myUnits.get(i).setCommand("Base");
-        			//System.out.println("KURAC");
         		}else {
 	        		if(myUnits.get(i) instanceof Panzer)
 	        			panzerAnimationShot((Panzer) myUnits.get(i));
-	        		else if(myUnits.get(i) instanceof Infantry)
-	        			infantryAnimationShot((Infantry) myUnits.get(i));
+	        		else if(myUnits.get(i) instanceof Infantry) {
+	        			if(myUnits.get(i).getName().contains("Machine"))
+	        				machineAnimationShot((Infantry) myUnits.get(i));
+	        			else
+	        				infantryAnimationShot((Infantry) myUnits.get(i));
+	        		}
 	        		if(!enemyUnits.contains(myUnits.get(i).getTarget())) {
 	        			myUnits.get(i).setTarget(null);
 	        			myUnits.get(i).setState("stop");
@@ -477,7 +480,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		if(curr.getX()>=obs[i].x-100 && curr.getX()<=obs[i].x
     				&& curr.getY()>=obs[i].y && curr.getY()<=obs[i].y+100)
     			{
-    				System.out.println("CRASH!!!!!!!!!");
     				return true;
     			}
     		}
@@ -516,11 +518,13 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     }
     
     public int[] damagePanzer(Unit unit) {
-    	
-    	int newX=(int)unit.getTarget().getX()-unit.getShootingError();
-		int newY=(int)unit.getTarget().getY()-unit.getShootingError();
+    	Random rand=new Random();
+    	int newX=(int)(unit.getTarget().getX()-rand.nextInt(unit.getShootingError()));
+		int newY=(int)(unit.getTarget().getY()-rand.nextInt(unit.getShootingError()));
+		
 		int []coordinations= {newX,newY};
-		if(unit.getFireRate()==10) {
+		if(unit.getFireRate()==10 || (unit.getFireRate()==1 && unit.getName().contains("Machine"))) {
+			System.out.println((int)unit.getTarget().getX()-newX);
 			if((int)unit.getTarget().getX()-newX<=10) {//full damage
 				unit.getTarget().setHealth(unit.getTarget().getHealth()-unit.getDamage());
 			}
@@ -536,7 +540,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     }
     
      public void panzerAnimationShot(Panzer panzer) {
-    	 System.out.println(panzer.getName()+"  "+panzer.getState()+"   "+panzer.getFireRate());
     	if(panzer.getState().equalsIgnoreCase("shot")) {
     		if(panzer.getFireRate()>10) {
     			panzer.setCommand("Base");
@@ -551,10 +554,28 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	}
     }
     
+     public void machineAnimationShot(Infantry inf) {
+    	 if(inf.getState().equalsIgnoreCase("shot")) {
+     		//System.out.println(inf.getFireRate());
+     		if(inf.getFireRate()>2) {
+     			inf.setCommand("shot1");
+     		}else if(inf.getFireRate()>1) {
+     			inf.setCommand("shot2");
+     		}else if(inf.getFireRate()>0){
+     			if(inf.getFireRate()==1)
+     				playSound("audio/Infantry/rifleShot1.wav",0);
+     			inf.setCommand("shot3");
+     		}else {
+     			inf.setFireRate(inf.reloading);
+     		}
+     		inf.setFireRate(inf.getFireRate()-1);
+     	}
+     }
+     
     public void infantryAnimationShot(Infantry inf) {
-    	//System.out.println(inf.getFireRate());
     	
     	if(inf.getState().equalsIgnoreCase("shot")) {
+    		//System.out.println(inf.getFireRate());
     		if(inf.getFireRate()>20) {
     			inf.setCommand("shot1");
     		}else if(inf.getFireRate()>10) {
@@ -567,9 +588,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     			inf.setFireRate(inf.reloading);
     		}
     		inf.setFireRate(inf.getFireRate()-1);
-    	}
-    	if(inf.getState().equalsIgnoreCase("move")) {
-    		
     	}
     }
     
