@@ -60,20 +60,20 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
-        this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 1000, 10, 60));
+        /*this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 1000, 10, 60));
         this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 40, 1000, 10, 60));
         //name,  x,  y,  health,  fireRange, fireRate,  damage,  speed
         this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
-        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
-        //this.myUnits.push(new Infantry("Mortar",100,50, 20,500, 30,10, 5, 30, 25));
+        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));*/
+        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,10, 1, 50, 25));
         
-        this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10, 80));
+        /*this.enemyUnits.push(new Panzer("Sherman", a, b, 500, 700, 20, 50, 10, 80));
 
         this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));
+        this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));*/
         this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));
         
         obs[0]=new Obstacles("panzer/broken1.png",300, 400,100, 200, false);
@@ -319,10 +319,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	
     		if(newTarget!=null && myUnits.get(i).getTarget()==null && !myUnits.get(i).getState().equalsIgnoreCase("move")) {
     			myUnits.get(i).setTarget(newTarget);
+    			myUnits.get(i).getTarget().setEnemy(myUnits.get(i));
     			myUnits.get(i).setState("shot");
     		}
         	if(myUnits.get(i).getTarget()!=null && myUnits.get(i).getState().equalsIgnoreCase("shot")) {
-        		//If target exist
+        		
         		
         		if(!checkShotingRange(myUnits.get(i), myUnits.get(i).getTarget())) {
         			//////SOUND FOR MISS THE RANGE
@@ -358,11 +359,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         for(int i=0;i<enemyUnits.size();i++) {
         	
         	
-        	
+        	if(enemyUnits.get(i).getEnemy()!=null && enemyUnits.get(i).getTarget()==null) {
+        		moveEnemy(enemyUnits.get(i));
+        	}
         	Unit newTarget=autoShot(enemyUnits.get(i), myUnits);
         	
         	if(newTarget!=null && enemyUnits.get(i).getTarget()==null && !enemyUnits.get(i).getState().equalsIgnoreCase("move")) {
         		enemyUnits.get(i).setTarget(newTarget);
+        		enemyUnits.get(i).getTarget().setEnemy(enemyUnits.get(i));
         		enemyUnits.get(i).setState("shot");
     		}
         	if(enemyUnits.get(i).getTarget()!=null && !checkShotingRange(enemyUnits.get(i), enemyUnits.get(i).getTarget())) {
@@ -411,6 +415,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    					playSound("audio/Infantry/heer/shot.wav", 0);
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyUnits.get(i));
+		                selected.get(j).getTarget().setEnemy(selected.get(j));
 	    			}
 	    			foundTarget=true;
 	    		}
@@ -450,6 +455,15 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
     }
 
+    public int[] mortarShot(Unit unit) {
+    	int coordinations[]=new int[2];
+    	Infantry myMortar=(Infantry)unit;
+    	Unit target=unit.getTarget();
+    	
+    	
+    	return coordinations;
+    	
+    }
 
     public static void playSound(String soundFile, int loopCount) {
         try {
@@ -524,7 +538,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		
 		int []coordinations= {newX,newY};
 		if(unit.getFireRate()==10 || (unit.getFireRate()==1 && unit.getName().contains("Machine"))) {
-			System.out.println((int)unit.getTarget().getX()-newX);
+			//System.out.println((int)unit.getTarget().getX()-newX);
 			if((int)unit.getTarget().getX()-newX<=10) {//full damage
 				unit.getTarget().setHealth(unit.getTarget().getHealth()-unit.getDamage());
 			}
@@ -575,13 +589,17 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     public void infantryAnimationShot(Infantry inf) {
     	
     	if(inf.getState().equalsIgnoreCase("shot")) {
+    		
     		//System.out.println(inf.getFireRate());
     		if(inf.getFireRate()>20) {
+    			if(inf.getFireRate()==inf.reloading-1)
+    				if(inf.getName().equalsIgnoreCase("Mortar"))
+    	    			playSound("audio/mortarShot.wav",0);
     			inf.setCommand("shot1");
     		}else if(inf.getFireRate()>10) {
     			inf.setCommand("shot2");
     		}else if(inf.getFireRate()>5){
-    			if(inf.getFireRate()==10)
+    			if(inf.getFireRate()==10 && !inf.getName().equalsIgnoreCase("Mortar"))
     				playSound("audio/Infantry/rifleShot1.wav",0);
     			inf.setCommand("shot3");
     		}else {
@@ -643,6 +661,31 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	infMove++;
     }
 
+    public void moveEnemy(Unit enemyUnit) {
+    	Unit target=enemyUnit.getEnemy();
+    	double x=target.getX();
+    	double y=target.getY();
+    	
+    	if(checkShotingRange(enemyUnit, target) && enemyUnit.getTarget()==null) {
+    		enemyUnit.setTarget(target);
+    		enemyUnit.setState("shot");
+    	}else {
+    		enemyUnit.setNextX(target.getX());
+    		enemyUnit.setNextY(target.getY());
+    		if(enemyUnit instanceof Infantry) {
+    			infantryAnimationMove((Infantry)enemyUnit);
+    		}else if(enemyUnit instanceof Panzer) {
+    			panzerAnimationMove((Panzer)enemyUnit);
+    		}
+    		
+    		
+    		
+    	}
+    	
+    	
+    	
+    	
+    }
     @Override
     public void mousePressed(MouseEvent e) {}
     @Override
