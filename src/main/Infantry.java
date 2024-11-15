@@ -8,13 +8,7 @@ public class Infantry extends Unit{
 		super(name,  x,  y,  health,  fireRange, fireRate,  damage,  speed, shootingError);
 		super.setCommand("Base");
 		this.reloading=reloading;
-	}
-	
-
-
-	
-	
-	
+	}	
 	
 	
 }

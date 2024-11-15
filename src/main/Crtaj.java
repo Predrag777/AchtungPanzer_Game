@@ -59,20 +59,20 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
-        this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 1000, 10, 60));
+        /*this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 1000, 10, 60));
         this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 40, 1000, 10, 60));
         //name,  x,  y,  health,  fireRange, fireRate,  damage,  speed
         this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
-        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
+        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));*/
         this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,10, 1, 50, 25));
         
         this.enemyUnits.push(new Panzer("Sherman", 500, 800, 500, 700, 20, 50, 10, 80));
-        this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
+        /*this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));
+        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));*/
         
         obs[0]=new Obstacles("panzer/broken1.png",300, 400,100, 200, false);
         obs[1]=new Obstacles("panzer/broken2.png",350, 500,100, 200, false);

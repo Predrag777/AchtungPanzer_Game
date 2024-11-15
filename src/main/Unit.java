@@ -16,6 +16,7 @@ public class Unit {
 	private int shootingError;
 	
 	private Unit target;
+	private Unit enemy;//Enemy attacks you
 	
 	public Unit(String name, double x, double y, int health, int fireRange, int fireRate, int damage, int speed, int shootingError) {
 		this.name=name;
@@ -27,16 +28,34 @@ public class Unit {
 		this.fireRange=fireRange;
 		this.damage=damage;
 		this.speed=speed;
-		this.target=null;
 		this.fireRate=fireRate;
-		this.state="Stop";//Stop, Fire, Move
+		this.state="Stop";
+		if(this.x!=this.nextX || this.y!=this.nextY)
+			this.state="Move";
 		this.side="Up";//Four sides Up,Down,Left,Right
+		this.shootingError=shootingError;
 		this.command="stand";
+		this.target=null;
+		this.enemy=null;
 	}
 
 	
 	
 	
+	public Unit getEnemy() {
+		return enemy;
+	}
+
+
+
+
+	public void setEnemy(Unit enemy) {
+		this.enemy = enemy;
+	}
+
+
+
+
 	public int getShootingError() {
 		return shootingError;
 	}
@@ -175,10 +194,19 @@ public class Unit {
 		this.side = side;
 	}
 
+
+
+
 	@Override
 	public String toString() {
-		return "Unit [target=" + target + ", state=" + state + ", side=" + side + "]";
+		return "Unit [name=" + name + ", nextX=" + nextX + ", nextY=" + nextY + ", state=" + state + "]";
 	}
+
+
+
+
+	
+
 	
 	
 	
