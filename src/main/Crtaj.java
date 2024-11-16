@@ -154,7 +154,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
         Graphics2D g2d = (Graphics2D) g;
         g.translate(-viewX, -viewY);
         
@@ -330,13 +329,17 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        //selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
+        g2d.setTransform(oldTransform); // Osigurava da se transformacije ne primenjuju
+        selectedImage.setBounds(selectedX + viewX, selectedY + viewY, 1000, 100);
         
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+        selectedImage.setSelected(this.selected);
+        
         if (mouseY < borders && viewY-mapSpeed>=0) {
             viewY -= mapSpeed;
         }
