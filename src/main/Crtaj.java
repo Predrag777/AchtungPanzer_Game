@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -24,10 +25,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import features.selectedUnits;
+
 public class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotionListener {
     int numberOfEnemyPanzers;
     
@@ -49,11 +51,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     int enemyInfSide=1;
     int selectedX=0;
     int selectedY=900;
-    
+    int specX=900, specY=100;
     int viewX=0,viewY=0;
     int mapSpeed=20;
     int borders=40;
     selectedUnits selectedImage;
+    specialPowers specPowers;
     
     String radioSound=null;
     
@@ -124,9 +127,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         } catch (IOException e) {
             e.printStackTrace();
         }
+        specPowers=new specialPowers();
+        
         selectedImage.setBounds(selectedX, selectedY, 1000, 100);
+        specPowers.setBounds(specX, specY, 100, 1000);
+        
         this.setLayout(null);
         this.add(selectedImage);
+        this.add(specPowers);
         
         addMouseMotionListener(this);
         setSize(4000, 4000);
@@ -136,11 +144,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         setFocusTraversalKeysEnabled(false);
     }
     
-    
-    public void initialize() {
-    	selectedUnits selected=new selectedUnits();
-    	
-    }
+
     
     
     
@@ -329,9 +333,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
-        g2d.setTransform(oldTransform); // Osigurava da se transformacije ne primenjuju
-        selectedImage.setBounds(selectedX + viewX, selectedY + viewY, 1000, 100);
+        g2d.setTransform(oldTransform); 
+        selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
+        specPowers.setBounds(specX+viewX, specY+viewY, 100, 400);
         
     }
 
@@ -479,7 +483,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	if(e.getButton()==MouseEvent.BUTTON1) {//SELECTING UNITS
 	    	for(int i=0;i<myUnits.size();i++) {
 		    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+100 &&
-		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100) {
+		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
 		    			selected.push(myUnits.get(i));
 		    			if(myUnits.get(i) instanceof Panzer)
 		    				playSound("audio/panzerSound.wav", 0);
@@ -719,11 +723,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		
     		
     		
-    	}
-    	
-    	
-    	
-    	
+    	}	
     }
     @Override
     public void mousePressed(MouseEvent e) {}
@@ -740,7 +740,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
     public void mouseMoved(MouseEvent e) {
         mouseX = e.getX();
@@ -750,6 +750,89 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         repaint();
     }
     
+	class selectedUnits extends JPanel implements ActionListener{
+		public LinkedList<Unit> selected;
+		int x=300;
+		public selectedUnits() {
+	        setLayout(null);
+	        selected=new LinkedList<>();
+	        this.setBackground(Color.GRAY);
+	        this.setPreferredSize(new Dimension(1000, 100));       
+	    }
+		
+		public void setSelected(LinkedList<Unit> selected) {
+			this.selected=selected;
+		}
+		
+		@Override
+	    public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			for(int i=0;i<this.selected.size();i++) {
+				if(this.selected.get(i) instanceof Panzer)
+					g.setColor(Color.RED);
+				else if(this.selected.get(i) instanceof Infantry)
+					g.setColor(Color.YELLOW);
+
+				//g.fillRect(x+i*100, 20, 50, 50);
+				try {
+					if(selected.get(i) instanceof Panzer)
+						g.drawImage(ImageIO.read(new File("panzer/"+selected.get(i).getName()+"Base.png")),x+i*100, 20, 150, 50, null);
+					else if(selected.get(i) instanceof Infantry)
+						g.drawImage(ImageIO.read(new File("infantry/Heer/Base"+selected.get(i).getName()+".png")),x+i*100, 20, 50, 50, null);
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			}
+			
+		}
+		
+		@Override
+	    public void actionPerformed(ActionEvent e) {
+	        repaint();
+	        
+		}
+	
+		
+	}
+
+	
+	class specialPowers extends JPanel implements ActionListener{
+		public specialPowers() {
+			JButton parachute=new JButton();
+			parachute.setForeground(getBackground());
+			parachute.setBounds(100,700,50,50);
+			this.add(parachute);
+			JButton bombing=new JButton("Bomb");
+			parachute.setBounds(100,750,50,50);
+			this.add(bombing);
+			JButton artillery=new JButton("Artil");
+			parachute.setBounds(100,800,50,50);
+			this.add(artillery);
+			this.setOpaque(false);
+			
+		}
+		
+		@Override
+	    public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.setColor(Color.RED);
+			g.fillRect(250, 100, 150, 500);
+			
+			//JButton bombing=new JButton();
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			repaint();
+		}
+		
+	}
 	
 }
 
