@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,7 +27,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
+import features.selectedUnits;
 public class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotionListener {
     int numberOfEnemyPanzers;
     
@@ -34,9 +35,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     LinkedList<Unit> enemyUnits=new LinkedList<>();
     LinkedList<Unit> selected=new LinkedList<>();
     
+    private CardLayout cardLayout;
+    private JPanel selectionMenu;
+    private JPanel callMenu; //Call bombing, parachuter reinforcement
+    
     Timer t = new Timer(100, this);
-    double x = 100, y = 100;
-    double x1 = 400, y1 = 100;
     int counterForFire = 0;
     double angle = 0;
     int enemySide=1;
@@ -44,10 +47,13 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     int infSide=1;
     int enemyInfSide=1;
+    int selectedX=0;
+    int selectedY=900;
     
     int viewX=0,viewY=0;
     int mapSpeed=20;
     int borders=40;
+    selectedUnits selectedImage;
     
     String radioSound=null;
     
@@ -59,20 +65,22 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
-        this.myUnits.push(new Panzer("tiger", x, y, 500, 650, 40, 1000, 10, 60));
-       /* this.myUnits.push(new Panzer("panzerIV", x1, y1, 500, 650, 40, 1000, 10, 60));
-        //name,  x,  y,  health,  fireRange, fireRate,  damage,  speed
+        selectedImage=new selectedUnits();
+        this.myUnits.push(new Panzer("tiger", 100, 100, 500, 650, 40, 1000, 10, 60));
+        this.myUnits.push(new Panzer("panzerIV", 400, 100, 500, 650, 40, 1000, 10, 60));
+        
         this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
         this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
-        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,10, 1, 50, 25));*/
+        
+        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,10, 1, 50, 25));
         
         this.enemyUnits.push(new Panzer("Sherman", 500, 800, 500, 700, 20, 50, 10, 80));
-        /*this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
+        this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));*/
+        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));
         
         obs[0]=new Obstacles("panzer/broken1.png",300, 400,100, 200, false);
         obs[1]=new Obstacles("panzer/broken2.png",350, 500,100, 200, false);
@@ -116,6 +124,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         } catch (IOException e) {
             e.printStackTrace();
         }
+        selectedImage.setBounds(selectedX, selectedY, 1000, 100);
+        this.setLayout(null);
+        this.add(selectedImage);
+        
         addMouseMotionListener(this);
         setSize(4000, 4000);
         setVisible(true);
@@ -123,6 +135,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
     }
+    
+    
+    public void initialize() {
+    	selectedUnits selected=new selectedUnits();
+    	
+    }
+    
+    
     
     int mouseX=0;
     int mouseY=0;
@@ -134,7 +154,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+        selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
         Graphics2D g2d = (Graphics2D) g;
         g.translate(-viewX, -viewY);
         
@@ -607,7 +627,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	
     	if(inf.getState().equalsIgnoreCase("shot")) {
     		
-    		//System.out.println(inf.getFireRate());
     		if(inf.getFireRate()>20) {
     			if(inf.getFireRate()==inf.reloading-1)
     				if(inf.getName().equalsIgnoreCase("Mortar"))
@@ -728,5 +747,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         repaint();
     }
     
-    
+	
 }
+
+
+
+
