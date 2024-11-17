@@ -58,11 +58,13 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     int mapSpeed=20;
     int borders=40;
     
+    LinkedList<Explosion> bombingList=new LinkedList<>();
+    Airplane airplane;
     //////Buttons
     boolean bombing=false, artillery=false, parachuter=false;
-    JButton bomb=new JButton();
-    JButton para=new JButton();
-    JButton artil=new JButton();
+    boolean performBomb=false, performArti=false, perfrormPara=false;
+    int perfSpecX=0, perfSpecY=0;
+    
     
     selectedUnits selectedImage;
     
@@ -76,6 +78,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
     public Crtaj() throws IOException {
         t.start();
+        this.airplane=new Airplane("parachuterAirplane.png");
         selectedImage=new selectedUnits();
         this.myUnits.push(new Panzer("tiger", 100, 100, 500, 650, 40, 1000, 10, 60));
         this.myUnits.push(new Panzer("panzerIV", 400, 100, 500, 650, 40, 1000, 10, 60));
@@ -86,7 +89,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
         this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
         
-        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,10, 1, 50, 25));
+        this.myUnits.push(new Infantry("Mortar",100,50, 20,400, 25,10, 1, 50, 25));
         
         this.enemyUnits.push(new Panzer("Sherman", 500, 800, 500, 700, 20, 50, 10, 80));
         this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
@@ -130,6 +133,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         obs[28]=new Obstacles("trees/tree3.png",2855, 1800,300, 250, false);
         obs[29]=new Obstacles("trees/tree3.png",2888, 1200,300, 250, false);
         
+        
+        bombingList.push(new Explosion("Artilery",  1));
+        bombingList.push(new Explosion("Artilery",  1));
+        bombingList.push(new Explosion("Artilery",  1));
+        bombingList.push(new Explosion("Artilery",  1));
+        
         try {
             background = ImageIO.read(new File("panzer/background.jpg"));
         } catch (IOException e) {
@@ -137,7 +146,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         }
         
         
-        //Buttons
+        /*//Buttons
         Image img1 = ImageIO.read(new File("icons/parachute.png")).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         para.setIcon(new ImageIcon(img1));
         para.setBounds(specX, specY, 50, 50);
@@ -149,7 +158,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         Image img3 = ImageIO.read(new File("icons/bomb.png")).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         bomb.setIcon(new ImageIcon(img3));
         bomb.setBounds(specX, specY+200, 50, 50);
-        this.add(bomb);
+        this.add(bomb);*/
+        
+        
+        
         
         selectedImage.setBounds(selectedX, selectedY, 1000, 100);
         
@@ -179,9 +191,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        para.setBounds(specX+viewX, specY+viewY, 50, 50);
+       
+        /*para.setBounds(specX+viewX, specY+viewY, 50, 50);
         artil.setBounds(specX+viewX, specY+100+viewY, 50, 50);
-        bomb.setBounds(specX+viewX, specY+200+viewY, 50, 50);
+        bomb.setBounds(specX+viewX, specY+200+viewY, 50, 50);*/
         Graphics2D g2d = (Graphics2D) g;
         g.translate(-viewX, -viewY);
         
@@ -359,6 +372,47 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         }
         g2d.setTransform(oldTransform); 
         selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
+        try {
+			g.drawImage(ImageIO.read(new File("icons/bomb.png")), specX+viewX, specY+viewY, 50, 50,null);
+			g.drawImage(ImageIO.read(new File("icons/parachute.png")), specX+viewX, specY+100+viewY, 50, 50,null);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        
+        if(bombing) {
+        	g.setColor(Color.RED);
+        	g.fillOval(mouseX+viewX, mouseY+viewY, 20, 20);
+        }
+        if(parachuter) {
+        	g.setColor(Color.GREEN);
+        	g.fillOval(mouseX+viewX, mouseY+viewY, 20, 20);
+        }
+        if(perfrormPara) {
+        	
+        }
+        if(performBomb) {
+        	
+        	if(bombingList.size()>0) {
+        		try {
+					g.drawImage(ImageIO.read(new File("specEffects/bombing/explosion"+bombingList.get(0).counter+".png")), (int)perfSpecX+rand.nextInt(300)-200, (int)perfSpecY+rand.nextInt(300)-200, 300, 300, null
+					);
+					playSound("audio/explosionSound.wav",0);
+					bombingList.get(0).counter+=1;
+					if(bombingList.get(0).counter>=6) {
+						bombingList.pop();
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        	bombing=false;
+        }else {
+        	performBomb=false;
+        }
         
     }
 
@@ -368,13 +422,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     public void actionPerformed(ActionEvent e) {
         repaint();
         selectedImage.setSelected(this.selected);
-        bomb.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bombing=true;
-            }
-        });
+        
         if (mouseY < borders && viewY-mapSpeed>=0) {
             viewY -= mapSpeed;
         }
@@ -476,9 +524,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	int y=e.getY()+viewY;
     	
     	
-    	if(bombing) {
-    		
-    	}
     	
     	boolean foundTarget=false;
     	
@@ -501,7 +546,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    		}
 	    	}
     	}
-    	if(selected.size()>0 && !foundTarget && e.getButton()==MouseEvent.BUTTON1) {
+    	if(selected.size()>0 && !foundTarget && e.getButton()==MouseEvent.BUTTON1 && !bombing) {
     		for(int i=0;i<selected.size();i++) {
     				selected.get(i).setTarget(null);
 	                selected.get(i).setState("move");
@@ -516,7 +561,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     			
 	    		
     	}
-    	if(e.getButton()==MouseEvent.BUTTON1) {//SELECTING UNITS
+    	if(e.getButton()==MouseEvent.BUTTON1 && !bombing) {//SELECTING UNITS
 	    	for(int i=0;i<myUnits.size();i++) {
 		    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+100 &&
 		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
@@ -529,17 +574,40 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    	}
     	}
     	
+    	if(e.getButton()==MouseEvent.BUTTON1) {
+    		if(mouseX>=specX && mouseX<=specX+50 && mouseY>=specY && mouseY<=specY+50) {
+    			System.out.println("Bombing selected");
+    			bombing=true;
+    		}
+    		if(mouseX>=specX && mouseX<=specX+50 && mouseY>=specY+100 && mouseY<=specY+100+50) {
+    			System.out.println("Parachuter selected");
+    			parachuter=true;
+    		}
+    	}
+    	
+    	if(e.getButton()==MouseEvent.BUTTON1 && bombing && !(mouseX>=specX && mouseX<=specX+50 && mouseY>=specY && mouseY<=specY+50)) {
+    		performBomb=true;
+    		
+        	perfSpecX=mouseX+viewX;
+        	perfSpecY=mouseY+viewY;
+    	}
+    	
+    	if(e.getButton()==MouseEvent.BUTTON1 && parachuter && !(mouseX>=specX && mouseX<=specX+50 && mouseY>=specY+100 && mouseY<=specY+100+50)) {
+    		perfrormPara=true;
+    		
+        	perfSpecX=mouseX+viewX;
+        	perfSpecY=mouseY+viewY;
+    	}
+    	
     	if(e.getButton()==MouseEvent.BUTTON3) {//Unselect
     		selected=new LinkedList<>();
+    		bombing=false;
+    		parachuter=false;
     	}
         
     }
 
-    public void performBombing(int x, int y, int numberOfGranates, Graphics g) {
-    	g.setColor(Color.RED);
-    	g.fillRect(x, y, 50, 50);
-    	
-    }
+
     
      public int[] mortarShot(Unit unit) {
     	int coordinations[]=new int[2];
@@ -782,6 +850,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 	
 	@Override
     public void mouseMoved(MouseEvent e) {
