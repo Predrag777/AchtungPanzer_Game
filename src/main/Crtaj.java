@@ -65,6 +65,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     boolean performBomb=false, performArti=false, perfrormPara=false;
     int perfSpecX=0, perfSpecY=0;
     
+    int parachuterX=0;
+    int parachuterY=0;
     
     selectedUnits selectedImage;
     
@@ -143,25 +145,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             background = ImageIO.read(new File("panzer/background.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        
-        
-        /*//Buttons
-        Image img1 = ImageIO.read(new File("icons/parachute.png")).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        para.setIcon(new ImageIcon(img1));
-        para.setBounds(specX, specY, 50, 50);
-        this.add(para);
-        Image img2 = ImageIO.read(new File("icons/artillery.png")).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        artil.setIcon(new ImageIcon(img2));
-        artil.setBounds(specX, specY+100, 50, 50);
-        this.add(artil);
-        Image img3 = ImageIO.read(new File("icons/bomb.png")).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        bomb.setIcon(new ImageIcon(img3));
-        bomb.setBounds(specX, specY+200, 50, 50);
-        this.add(bomb);*/
-        
-        
-        
+        }        
         
         selectedImage.setBounds(selectedX, selectedY, 1000, 100);
         
@@ -191,10 +175,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-       
-        /*para.setBounds(specX+viewX, specY+viewY, 50, 50);
-        artil.setBounds(specX+viewX, specY+100+viewY, 50, 50);
-        bomb.setBounds(specX+viewX, specY+200+viewY, 50, 50);*/
         Graphics2D g2d = (Graphics2D) g;
         g.translate(-viewX, -viewY);
         
@@ -391,7 +371,30 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	g.fillOval(mouseX+viewX, mouseY+viewY, 20, 20);
         }
         if(perfrormPara) {
-        	
+        	try {
+				g.drawImage(ImageIO.read(new File("airplanes/parachuterAirplane.png")), (int)airplane.x, (int)airplane.y-500, 500, 500, null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	airplane.x+=50;
+        }
+        
+        if(perfrormPara && airplane.x>=perfSpecX && airplane.y<=perfSpecY) {
+        	parachuter=false;
+        	if(parachuterY<=perfSpecY) {
+	        	try {
+					g.drawImage(ImageIO.read(new File("infantry/Heer/parachuter.png")), (int)parachuterX, (int)parachuterY, 50, 50, null);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        	parachuterY+=10;
+        	}else {
+        		myUnits.push(new Infantry("Rifle", parachuterX,parachuterY, 20,500, 30,10, 5, 30, 25));
+        		parachuterX=parachuterY=0;
+        		perfrormPara=parachuter=false;
+        	}
         }
         if(performBomb) {
         	
@@ -534,9 +537,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    			
 	    			
 	    			for(int j=0;j<selected.size();j++) {
-	    				if(selected.get(j) instanceof Panzer)
+	    				if(selected.get(j) instanceof Panzer && myUnits.contains(selected.get(j)))
 	    					playSound("audio/panzerFire.wav", 0);
-	    				else if(selected.get(j) instanceof Infantry)
+	    				else if(selected.get(j) instanceof Infantry && myUnits.contains(selected.get(j)))
 	    					playSound("audio/Infantry/heer/shot.wav", 0);
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyUnits.get(i));
@@ -597,6 +600,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		
         	perfSpecX=mouseX+viewX;
         	perfSpecY=mouseY+viewY;
+        	airplane.y=perfSpecY;
+        	parachuterX=perfSpecX;
+        	parachuterY=perfSpecY-500;
+        	playSound("audio/airplaneSound.wav",0);
     	}
     	
     	if(e.getButton()==MouseEvent.BUTTON3) {//Unselect
