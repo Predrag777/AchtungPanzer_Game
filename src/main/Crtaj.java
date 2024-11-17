@@ -32,6 +32,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import Missions.Mission1;
+import Missions.Mission;
 public class Crtaj extends JPanel implements MouseListener, ActionListener, MouseMotionListener {
     int numberOfEnemyPanzers;
     
@@ -78,58 +80,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         t.start();
         this.airplane=new Airplane("parachuterAirplane.png");
         selectedImage=new selectedUnits();
-        this.myUnits.push(new Panzer("tiger", 100, 100, 500, 650, 40, 1000, 10, 60));
-        this.myUnits.push(new Panzer("panzerIV", 400, 100, 500, 650, 40, 1000, 10, 60));
-        
-        this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
-        this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
-        this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
-        
-        this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
-        
-        this.myUnits.push(new Infantry("Mortar",100,50, 20,400, 25,10, 1, 50, 25));
-        
-        this.enemyUnits.push(new Panzer("Sherman", 500, 800, 500, 700, 20, 50, 10, 80));
-        this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));
-        
-        obs[0]=new Obstacles("panzer/broken1.png",300, 400,100, 200, false);
-        obs[1]=new Obstacles("panzer/broken2.png",350, 500,100, 200, false);
-        obs[2]=new Obstacles("panzer/broken3.png",1600, 50,100, 200, false);
-        obs[3]=new Obstacles("panzer/buildings/house1.png",50, 600,300, 400, false);
-        obs[4]=new Obstacles("panzer/buildings/house1.png",800, 700,300, 400, false);
-
-        
-        obs[5]=new Obstacles("trees/tree1.png",1000, 400,300, 250, false);
-        obs[6]=new Obstacles("trees/tree1.png",1500, 1500,300, 250, false);
-        obs[7]=new Obstacles("trees/tree1.png",1600, 150,300, 250, false);
-        obs[8]=new Obstacles("trees/tree1.png",1550, 1500,300, 250, false);
-        obs[9]=new Obstacles("trees/tree1.png",1650, 1000,300, 250, false);
-        
-        obs[10]=new Obstacles("panzer/buildings/house2.png",2500, 1400,500, 200, false);
-        obs[11]=new Obstacles("panzer/buildings/house3.png",2850, 2500,500, 200, false);
-        obs[12]=new Obstacles("panzer/buildings/house4.png",1600, 850,500, 200, false);
-        obs[13]=new Obstacles("panzer/buildings/house1.png",2500, 500,300, 400, false);
-        obs[14]=new Obstacles("panzer/buildings/house1.png",2500, 2000,300, 400, false);
-        
-        obs[15]=new Obstacles("trees/tree2.png",1500, 400,300, 250, false);
-        obs[16]=new Obstacles("trees/tree2.png",1500, 1500,300, 250, false);
-        obs[17]=new Obstacles("trees/tree2.png",1600, 150,300, 250, false);
-        obs[18]=new Obstacles("trees/tree2.png",1550, 800,300, 250, false);
-        obs[19]=new Obstacles("trees/tree2.png",1650, 1000,300, 250, false);
-        
-        obs[20]=new Obstacles("trees/tree3.png",1800, 400,300, 250, false);
-        obs[21]=new Obstacles("trees/tree3.png",1850, 1500,300, 250, false);
-        obs[22]=new Obstacles("trees/tree3.png",1870, 150,300, 250, false);
-        obs[23]=new Obstacles("trees/tree3.png",1855, 800,300, 250, false);
-        obs[24]=new Obstacles("trees/tree3.png",1888, 1000,300, 250, false);
-        
-        obs[25]=new Obstacles("trees/tree3.png",2800, 1400,300, 250, false);
-        obs[26]=new Obstacles("trees/tree3.png",2850, 500,300, 250, false);
-        obs[27]=new Obstacles("trees/tree3.png",2870, 1150,300, 250, false);
-        obs[28]=new Obstacles("trees/tree3.png",2855, 1800,300, 250, false);
-        obs[29]=new Obstacles("trees/tree3.png",2888, 1200,300, 250, false);
+        Mission1 m=new Mission1("SS");
+        this.myUnits=m.getMyUnits();
+        this.enemyUnits=m.getEnemyUnits();
+        this.obs=m.getObs();
         
         
         bombingList.push(new Explosion("Artilery",  1));

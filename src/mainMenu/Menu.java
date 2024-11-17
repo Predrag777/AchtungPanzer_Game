@@ -194,7 +194,7 @@ public class Menu {
     	                + "As evidence surfaces of clandestine meetings between communist operatives and Ustaša militants, fears grow that this unlikely coalition could spark widespread insurrection. "
     	                + "Documents recovered from a safehouse in Zagreb reveal a joint operation code-named Crimson Dawn, a plot to incite uprisings across key cities while eliminating high-ranking officials loyal to the crown.\n"
     	                + "\n"
-    	                + "The intelligence has led to the formation of a top-secret unit, the Special Operations Detachment (SOD). Their mission is clear: dismantle the Crimson Dawn network and bring its architects to justice before their plans plunge the nation into anarchy.";
+    	                + "The intelligence has led to the formation of a top-secret unit, the Special Operations Detachment (Jedinica za Specijalne Operacije - JSO). Their mission is clear: dismantle the Crimson Dawn network and bring its architects to justice before their plans plunge the nation into anarchy.";
 
     	        drawWrappedText(g, text, 600, 550, 800); 
     	    } catch (IOException e) {
