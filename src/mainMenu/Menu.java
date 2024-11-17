@@ -170,7 +170,10 @@ public class Menu {
 							}
 						});
             add(contin);
-            
+            JButton backButton = new JButton("Back to Menu");
+            backButton.setBounds(100, 800, 200, 50);
+            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
+            add(backButton);
     	}
     	
     	@Override
@@ -227,7 +230,7 @@ public class Menu {
 
     }
     
-    class Mission2 extends Mission1{
+    class Mission2 extends MissionsPanel{
 
 		public Mission2(String imagePath) {
 			super(imagePath);
@@ -239,15 +242,15 @@ public class Menu {
     	    super.paintComponent(g);
 
     	    try {
-    	        Image backgroundImage = ImageIO.read(new File("backgrounds/JSO.jpg"));
+    	        Image backgroundImage = ImageIO.read(new File("backgrounds/background6.jpg"));
     	        g.drawImage(backgroundImage, 600, 100, 700, 400, null);
 
     	        g.setFont(new Font("Serif", Font.BOLD, 15));
     	        g.setColor(Color.WHITE);
 
-    	        String text = "On April 6, 1941, the German war machine roared to life against the Kingdom of Yugoslavia. The skies above Belgrade were filled with fire and smoke as Luftwaffe bombers unleashed devastation in a surprise attack, leaving the capital in ruins and the nation reeling. This brutal assault, known as Operation Punishment, marked the beginning of Germany’s campaign to crush Yugoslav resistance and secure its Balkan flank.\n"
+    	        String text = "On April 6, 1941, the German war machine roared to life against the Kingdom of Yugoslavia. The skies above Belgrade were filled with fire and smoke as Luftwaffe bombers unleashed devastation in a surprise attack, leaving the \n capital in ruins and the nation reeling. This brutal assault, known as Operation Punishment, marked the beginning of Germany’s campaign to crush Yugoslav resistance and secure its Balkan flank.\n"
     	        		+ "\n"
-    	        		+ "Despite the destruction, the Royal Yugoslav Air Force (RYAF) has not been silenced. Fighters and bombers stationed across the kingdom are regrouping for a daring counterattack on German airfields in Austria and Bulgaria. The success of this operation could disrupt the Luftwaffe’s ability to sustain its offensive and buy precious time for the kingdom’s defenders.\n"
+    	        		+ "Despite the destruction, the Royal Yugoslav Air Force (RYAF) has not been silenced. Fighters and bombers stationed across the kingdom are regrouping for a daring counterattack on German airfields in Austria and Bulgaria. The success \n of this operation could disrupt the Luftwaffe’s ability to sustain its offensive and buy precious time for the kingdom’s defenders.\n"
     	        		+ "\n"
     	        		+ "However, German intelligence is aware of these plans and is preparing a coordinated strike to neutralize key Yugoslav airbases before the bombers can take off. The airfields at Zemun and Kraljevo, critical to the counteroffensive, are now priority targets.";
 
@@ -256,7 +259,64 @@ public class Menu {
     	        e.printStackTrace();
     	    }
     	}
-    	
+		
+		@Override
+    	public void initialize() {
+    		JButton contin = new JButton("Continue");
+    		contin.setBounds(800, 800, 200, 50);
+			contin.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								// TODO Auto-generated method stub
+								 Crtaj c;
+								try {
+									c = new Crtaj();
+									JFrame frame = new JFrame();
+			
+							        frame.setSize(1000, 1000);
+							        frame.setVisible(true);
+							        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+							        frame.add(c);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							        
+							}
+						});
+            add(contin);
+            JButton backButton = new JButton("Back to Menu");
+            backButton.setBounds(100, 800, 200, 50);
+            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
+            add(backButton);
+            
+    	}
+		
+		protected void drawWrappedText(Graphics g, String text, int x, int y, int wrapWidth) {
+    	    FontMetrics metrics = g.getFontMetrics();
+    	    int lineHeight = metrics.getHeight();
+
+    	    String[] words = text.split(" ");
+    	    StringBuilder line = new StringBuilder();
+
+    	    for (String word : words) {
+    	        String testLine = line + word + " ";
+    	        int lineWidth = metrics.stringWidth(testLine);
+
+    	        if (lineWidth > wrapWidth) {
+    	            g.drawString(line.toString(), x, y);
+    	            line = new StringBuilder(word + " ");
+    	            y += lineHeight;
+    	        } else {
+    	            line.append(word).append(" ");
+    	        }
+    	    }
+
+    	    if (!line.isEmpty()) {
+    	        g.drawString(line.toString(), x, y);
+    	    }
+    	}
     }
     
     class BackgroundPanel extends JPanel {

@@ -39,10 +39,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     LinkedList<Unit> enemyUnits=new LinkedList<>();
     LinkedList<Unit> selected=new LinkedList<>();
     
-    private CardLayout cardLayout;
-    private JPanel selectionMenu;
-    private JPanel callMenu; //Call bombing, parachuter reinforcement
-    
     Timer t = new Timer(100, this);
     int counterForFire = 0;
     double angle = 0;
