@@ -400,8 +400,16 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	
         	if(bombingList.size()>0) {
         		try {
-					g.drawImage(ImageIO.read(new File("specEffects/bombing/explosion"+bombingList.get(0).counter+".png")), (int)perfSpecX+rand.nextInt(300)-200, (int)perfSpecY+rand.nextInt(300)-200, 300, 300, null
+        			int newX=(int)perfSpecX+rand.nextInt(300)-200;
+        			int newY=(int)perfSpecY+rand.nextInt(300)-200;
+					g.drawImage(ImageIO.read(new File("specEffects/bombing/explosion"+bombingList.get(0).counter+".png")), newX, newY, 300, 300, null
 					);
+					for(int i=0;i<enemyUnits.size();i++) {
+						if(newX>=enemyUnits.get(i).getX() && newX<=enemyUnits.get(i).getX()+350 &&
+								newY<=enemyUnits.get(i).getY() && newY>=enemyUnits.get(i).getY()-350	) {
+							enemyUnits.get(i).setHealth(enemyUnits.get(i).getHealth()-200);
+						}
+					}
 					playSound("audio/explosionSound.wav",0);
 					bombingList.get(0).counter+=1;
 					if(bombingList.get(0).counter>=6) {
@@ -603,6 +611,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	airplane.y=perfSpecY;
         	parachuterX=perfSpecX;
         	parachuterY=perfSpecY-500;
+        	playSound("specEffects/reinforcement.wav",0);
         	playSound("audio/airplaneSound.wav",0);
     	}
     	
