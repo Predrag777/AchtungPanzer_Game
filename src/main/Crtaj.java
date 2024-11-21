@@ -50,7 +50,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     int infSide=1;
     int enemyInfSide=1;
     int selectedX=0;
-    int selectedY=900;
+    int selectedY=850;
     int specX=900, specY=100;
     int viewX=0,viewY=0;
     int mapSpeed=20;
@@ -97,7 +97,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             e.printStackTrace();
         }        
         
-        selectedImage.setBounds(selectedX, selectedY, 1000, 100);
+        selectedImage.setBounds(selectedX, selectedY, 1000, 250);
         
         this.setLayout(null);
         this.add(selectedImage);
@@ -301,7 +301,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             e.printStackTrace();
         }
         g2d.setTransform(oldTransform); 
-        selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 100);
+        selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 150);
         try {
 			g.drawImage(ImageIO.read(new File("icons/bomb.png")), specX+viewX, specY+viewY, 50, 50,null);
 			g.drawImage(ImageIO.read(new File("icons/parachute.png")), specX+viewX, specY+100+viewY, 50, 50,null);
@@ -860,7 +860,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
 	class selectedUnits extends JPanel implements ActionListener{
 		public LinkedList<Unit> selected;
-		int x=300;
+		int x=100;
 		public selectedUnits() {
 	        setLayout(null);
 	        selected=new LinkedList<>();
@@ -875,14 +875,16 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		@Override
 	    public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			
+			for(int i=0;i<4;i++) {
+				g.drawRect(x+i*200, 20, 180, 100);
+			}
 			for(int i=0;i<this.selected.size();i++) {
 				try {
-					if(selected.get(i) instanceof Panzer)
-						g.drawImage(ImageIO.read(new File("panzer/"+selected.get(i).getName()+"Base.png")),x+i*100, 20, 150, 50, null);
-					else if(selected.get(i) instanceof Infantry)
-						g.drawImage(ImageIO.read(new File("infantry/Heer/Base"+selected.get(i).getName()+".png")),x+i*100, 20, 50, 50, null);
-
+					if(selected.get(i) instanceof Panzer) {
+						g.drawImage(ImageIO.read(new File("panzer/"+selected.get(i).getName()+"Base.png")),x+i*200+50, 20, 100, 80, null);
+					}else if(selected.get(i) instanceof Infantry) {
+						g.drawImage(ImageIO.read(new File("infantry/Heer/Base"+selected.get(i).getName()+".png")),x+i*200+50, 20, 50, 80, null);
+					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
