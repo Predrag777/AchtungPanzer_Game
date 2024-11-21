@@ -507,8 +507,16 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    		}
 	    	}
     	}
-    	if(selected.size()>0 && !foundTarget && e.getButton()==MouseEvent.BUTTON1 && !bombing) {
-    		for(int i=0;i<selected.size();i++) {
+    	if(selected.size()>0 && !foundTarget && e.getButton()==MouseEvent.BUTTON1 && !bombing && !parachuter) {
+    		boolean select=true;
+    		for(int i=0;i<myUnits.size();i++) {
+    			if((x>myUnits.get(i).getX()-20 && x<myUnits.get(i).getX()+100 &&
+	    				y>myUnits.get(i).getY()-100 && y<myUnits.get(i).getY()+100)) {
+    				select=false;
+    			}
+    		}
+    		if(select) {
+    			for(int i=0;i<selected.size();i++) {
     				selected.get(i).setTarget(null);
 	                selected.get(i).setState("move");
 	                selected.get(i).setCommand("Base");
@@ -518,11 +526,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	                	playSound("audio/panzerSelect1.wav", 0);
 	                else if(selected.get(i) instanceof Infantry)
 	                	playSound("audio/Infantry/heer/move.wav", 0);
+    			}
     		}
-    			
 	    		
     	}
-    	if(e.getButton()==MouseEvent.BUTTON1 && !bombing) {//SELECTING UNITS
+    	if(e.getButton()==MouseEvent.BUTTON1 && !bombing && !parachuter) {//SELECTING UNITS
 	    	for(int i=0;i<myUnits.size();i++) {
 		    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+100 &&
 		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
