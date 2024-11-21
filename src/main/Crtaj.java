@@ -396,7 +396,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         else if (mouseX > getWidth() - borders) {
             viewX += mapSpeed;
         }
-        
+        setNextCoordinates(myUnits);
+        //setNextCoordinates(enemyUnits);
         for(int i=0;i<myUnits.size();i++) {
         	
         	Unit newTarget=autoShot(myUnits.get(i), enemyUnits);
@@ -490,7 +491,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	
     	if(selected.size()>0 && e.getButton()==MouseEvent.BUTTON1) {//SHOOT
 	    	for(int i=0;i<enemyUnits.size();i++) {
-	    		if(((x>enemyUnits.get(i).getX()-20 && x<enemyUnits.get(i).getX()+100 &&
+	    		int width=0;
+	    		if(enemyUnits.get(i) instanceof Panzer)
+	    			width=150;
+	    		else if(enemyUnits.get(i) instanceof Infantry)
+	    			width=45;
+	    		if(((x>enemyUnits.get(i).getX()-20 && x<enemyUnits.get(i).getX()+width &&
 	    				y>enemyUnits.get(i).getY()-100 && y<enemyUnits.get(i).getY()+100))) {
 	    			
 	    			
@@ -532,13 +538,18 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	}
     	if(e.getButton()==MouseEvent.BUTTON1 && !bombing && !parachuter) {//SELECTING UNITS
 	    	for(int i=0;i<myUnits.size();i++) {
-		    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+100 &&
-		    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
-		    			selected.push(myUnits.get(i));
-		    			if(myUnits.get(i) instanceof Panzer)
-		    				playSound("audio/panzerSound.wav", 0);
-		    			else if(myUnits.get(i) instanceof Infantry)
-		    				playSound("audio/Infantry/heer/selected.wav", 0);
+	    		int width=0;
+	    		if(myUnits.get(i) instanceof Panzer)
+	    			width=150;
+	    		else if(myUnits.get(i) instanceof Infantry)
+	    			width=45;
+	    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+width &&
+	    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
+	    			selected.push(myUnits.get(i));
+	    			if(myUnits.get(i) instanceof Panzer)
+	    				playSound("audio/panzerSound.wav", 0);
+	    			else if(myUnits.get(i) instanceof Infantry)
+	    				playSound("audio/Infantry/heer/selected.wav", 0);
 		    		}
 	    	}
     	}
@@ -581,7 +592,18 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
     }
 
-
+    public void setNextCoordinates(LinkedList<Unit> units) {
+    	for(int i=0;i<units.size()-1;i++) {
+    		for(int j=i+1;j<units.size();j++) {
+    			if(Math.abs(units.get(i).getNextX()-units.get(j).getNextX())<20) {
+    				units.get(j).setNextX(units.get(j).getNextX()+110-Math.abs(units.get(i).getNextX()-units.get(j).getNextX()));
+    			}
+    			if(Math.abs(units.get(i).getNextY()-units.get(j).getNextY())<20) {
+    				units.get(j).setNextY(units.get(j).getNextY()+110-Math.abs(units.get(i).getNextY()-units.get(j).getNextY()));
+    			}
+    		}
+    	}
+    }
     
      public int[] mortarShot(Unit unit) {
     	int coordinations[]=new int[2];
