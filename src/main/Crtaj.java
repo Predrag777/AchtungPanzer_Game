@@ -549,6 +549,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    					playSound("audio/panzerFire.wav", 0, 1);
 	    				else if(selected.get(j) instanceof Infantry && myUnits.contains(selected.get(j)))
 	    					playSound("audio/Infantry/heer/shot.wav", 0, 1);
+	    				selected.get(j).path=null;
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyUnits.get(i));
 		                selected.get(j).getTarget().setEnemy(selected.get(j));
@@ -838,10 +839,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
         panzer.findShortestPath(compressedMap);
         if(panzer.path.size()>0) {
-        	panzer.setX(panzer.path.get(0)[0]*6+directionX*panzer.getSpeed());
-        	panzer.setY(panzer.path.get(0)[1]*6+directionY*panzer.getSpeed());
+        	panzer.setX(panzer.path.get(0)[0]*6);
+        	panzer.setY(panzer.path.get(0)[1]*6);
 	        //followMap((Unit)panzer, panzer.path.get(0));
-	        panzer.path.remove(0);
+        	for(int i=0;i<4;i++)
+        		if(panzer.path.size()>0)
+        			panzer.path.remove(0);
 	        
         }else {
         	panzer.setX(panzer.getNextX());
