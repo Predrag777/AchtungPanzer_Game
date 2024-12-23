@@ -572,7 +572,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	                selected.get(i).setCommand("Base");
 	                selected.get(i).setNextX(x);
 	                selected.get(i).setNextY(y);
-	                
+	                selected.get(i).path=null;
 	                if(selected.get(i) instanceof Panzer)
 	                	playSound("audio/panzerSelect1.wav", 0,1 );
 	                else if(selected.get(i) instanceof Infantry)
@@ -841,15 +841,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	panzer.setX(panzer.path.get(0)[0]*6+directionX*panzer.getSpeed());
         	panzer.setY(panzer.path.get(0)[1]*6+directionY*panzer.getSpeed());
 	        //followMap((Unit)panzer, panzer.path.get(0));
-	        for(int i=0;i<5;i++) {//Number 5 is speed
-	        	if(panzer.path.size()>0)
-	        		panzer.path.remove(0);
-	        	else {
-	        		panzer.setX(panzer.getNextX());
-	            	panzer.setY(panzer.getNextY());
-	            	panzer.setState("stop");
-	        	}
-	        }
+	        panzer.path.remove(0);
+	        
         }else {
         	panzer.setX(panzer.getNextX());
         	panzer.setY(panzer.getNextY());
