@@ -1,5 +1,8 @@
 package main;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Unit {
 	private String name;
 	private double x, nextX;
@@ -17,7 +20,8 @@ public class Unit {
 	
 	private Unit target;
 	private Unit enemy;//Enemy attacks you
-	
+	List<int[]> path;
+	int myMap[][]=new int[3000][3000];
 	public Unit(String name, double x, double y, int health, int fireRange, int fireRate, int damage, int speed, int shootingError) {
 		this.name=name;
 		this.health=health;
@@ -40,11 +44,37 @@ public class Unit {
 	}
 
 	
+	public void updateMap(int currMap[][], int start[][], int end[][]) {
+		this.myMap=currMap;
+	}
 	
+	public void findShortestPath(int map[][]) {
+		if(this.path==null) {
+			int[] start = {(int) this.x/6, (int) this.y/6};
+		    int[] goal = {(int) this.nextX/6, (int) this.nextY/6};
+	
+		    List<int[]> steps = AStar.astar(start, goal, map); // Pozivamo A* metod
+		    this.path = steps;
+		    //System.out.println("Start: " + Arrays.toString(start) + " Goal: " + Arrays.toString(goal));
+		    if (steps != null) {
+		        for (int[] step : steps) {
+		            System.out.println(Arrays.toString(step));
+		        }
+		    } else {
+		        System.out.println("Nema puta do cilja!");
+		    }
+		}
+	}
 	
 	public Unit getEnemy() {
 		return enemy;
 	}
+	
+	 public void updateMove() {
+	    	if(this.x!=this.nextX || this.y!=this.nextY) {
+	    		
+	    	}
+	 }
 
 
 
@@ -201,14 +231,4 @@ public class Unit {
 	public String toString() {
 		return "Unit [name=" + name + ", nextX=" + nextX + ", nextY=" + nextY + ", state=" + state + "]";
 	}
-
-
-
-
-	
-
-	
-	
-	
-	
 }
