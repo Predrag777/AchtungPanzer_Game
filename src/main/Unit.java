@@ -1,5 +1,12 @@
 package main;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +28,7 @@ public class Unit {
 	private Unit target;
 	private Unit enemy;//Enemy attacks you
 	List<int[]> path;
-	int myMap[][]=new int[3000][3000];
+	int myMap[][]=new int[3000][2000];
 	public Unit(String name, double x, double y, int health, int fireRange, int fireRate, int damage, int speed, int shootingError) {
 		this.name=name;
 		this.health=health;
@@ -48,22 +55,23 @@ public class Unit {
 		this.myMap=currMap;
 	}
 	
-	public void findShortestPath(int map[][]) {
+
+	public void findShortestPath(int map[][], int height, int width) {
 		if(this.path==null) {
-			int[] start = {(int) this.x/6, (int) this.y/6};
-		    int[] goal = {(int) this.nextX/6, (int) this.nextY/6};
-	
-		    List<int[]> steps = AStar.astar(start, goal, map); // Pozivamo A* metod
-		    this.path = steps;
-		    //System.out.println("Start: " + Arrays.toString(start) + " Goal: " + Arrays.toString(goal));
+			int[] start = {(int) this.x, (int) this.y};
+		    int[] goal = {(int) this.nextX, (int) this.nextY};
+
+		    List<int[]> steps = AStar.astar(start, goal, map, width, height);
+	    	this.path = steps;
 		    if (steps != null) {
-		        for (int[] step : steps) {
-		            System.out.println(Arrays.toString(step));
-		        }
+		        /*for (int[] step : steps) {
+		            System.out.println(Arrays.toString(step)+"  "+map[step[0]][step[1]]);
+		        }*/
 		    } else {
 		        System.out.println("Nema puta do cilja!");
 		    }
-		}
+		    
+		}	
 	}
 	
 	public Unit getEnemy() {

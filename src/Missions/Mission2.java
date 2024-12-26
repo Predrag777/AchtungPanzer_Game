@@ -25,8 +25,8 @@ public class Mission2 extends Mission{
 	}
 
 	public void setMyUnits() {
-		this.myUnits.push(new Panzer("tiger", 100, 100, 500, 650, 40, 1000, 10, 60));
-        this.myUnits.push(new Panzer("panzerIV", 400, 100, 500, 650, 40, 1000, 10, 60));
+		this.myUnits.push(new Panzer("tiger", 100, 100, 200, 100, 500, 650, 40, 1000, 10, 60));
+        this.myUnits.push(new Panzer("panzerIV", 400, 100, 200, 100, 500, 650, 40, 1000, 10, 60));
         
         this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
@@ -42,7 +42,7 @@ public class Mission2 extends Mission{
 	}
 
 	public void setEnemyUnits() {
-		this.enemyUnits.push(new Panzer("Sherman", 500, 800, 500, 700, 20, 50, 10, 80));
+		this.enemyUnits.push(new Panzer("Sherman", 500, 800, 200, 100, 500, 700, 20, 50, 10, 80));
         this.enemyUnits.push(new Infantry("Rifle", 300, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 700, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 750, 850, 20,450, 30,10, 5, 30, 25));

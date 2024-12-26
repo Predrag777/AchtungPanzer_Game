@@ -6,6 +6,7 @@ public class Obstacles {
 	int width,height;
 	boolean destroyable;
 	
+	
 	public Obstacles(String name, int x, int y,int width,int height, boolean destroyable) {
 		this.name=name;
 		this.x=x;
