@@ -52,14 +52,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     LinkedList<Unit> myUnits=new LinkedList<>();
     LinkedList<Unit> enemyUnits=new LinkedList<>();
     LinkedList<Unit> selected=new LinkedList<>();
-    private JFrame parentFrame;
+    private CardLayout parentFrame;
     Timer t = new Timer(100, this);
     int counterForFire = 0;
     double angle = 0;
     int enemySide=1;
     int infMove=0;
-    
-    
+    public boolean isRunning=true;
+    int menuX=10,menuY=0;
     int newSize=500;
     int infSide=1;
     int enemyInfSide=1;
@@ -71,7 +71,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     int borders=40;
     int[][] compressedMap;
     int map[][]=new int[2000][2000];
-    
+    MenuBar menu;
     LinkedList<Explosion> bombingList=new LinkedList<>();
     Airplane airplane;
     //////Buttons
@@ -81,7 +81,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     int parachuterX=0;
     int parachuterY=0;
-    
+    private JPanel mainPanel;
     selectedUnits selectedImage;
     
     String radioSound=null;
@@ -93,10 +93,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     List<Node> path;
     //BufferedImage images[];
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
-    public Crtaj(JFrame parentFrame) throws IOException {
+    public Crtaj(CardLayout parentFrame, JPanel mainPanel) throws IOException {
         t.start();
         
         this.parentFrame = parentFrame;
+        this.mainPanel=mainPanel;
         this.airplane=new Airplane("parachuterAirplane.png");
         selectedImage=new selectedUnits();
         Mission1 m=new Mission1("SS");
@@ -143,8 +144,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
         compressedMap = map;
         //compressedMap=compressMap(map, newSize);
+        menu=new MenuBar();
+        menu.setBounds(menuX, menuY, 1700, 50);
+        this.add(menu);
         
-        playSound("audio/covers/cover1.wav",0, -20);
+        playSound("audio/covers/backgroundSound1.wav",50, -20);
     }
  
     int mouseX=0;
@@ -338,6 +342,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         }
         g2d.setTransform(oldTransform); 
         selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 150);
+        menu.setBounds(menuX+viewX,menuY+viewY, 1700, 50);
         try {
 			g.drawImage(ImageIO.read(new File("icons/bomb.png")), specX+viewX, specY+viewY, 50, 50,null);
 			g.drawImage(ImageIO.read(new File("icons/parachute.png")), specX+viewX, specY+100+viewY, 50, 50,null);
@@ -519,6 +524,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		enemyUnits.remove(enemyUnits.get(i));
         	}
         }
+        
+        if (enemyUnits.size() <= 0) {
+            JOptionPane.showMessageDialog(this, "Victory", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
+            isRunning=false;
+        } else if (myUnits.size() <= 0) {
+            JOptionPane.showMessageDialog(this, "Lose", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
+            isRunning=false;
+        }
       
         
     }
@@ -634,13 +647,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		bombing=false;
     		parachuter=false;
     	}
-    	if (enemyUnits.size() <= 0) {
-            JOptionPane.showMessageDialog(this, "Victory", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
-        } else if (myUnits.size() <= 0) {
-            JOptionPane.showMessageDialog(this, "Lose", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
-        }
+    	
     }
 
     public void setNextCoordinates(LinkedList<Unit> units) {
@@ -828,24 +835,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void panzerAnimationMove(Panzer panzer) {
         panzer.setTarget(null);
-        double deltaX = panzer.getNextX() - panzer.getX();
-        double deltaY = panzer.getNextY() - panzer.getY();
-        
-        double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        double directionX = deltaX / distance;
-        double directionY = deltaY / distance;
-        //angle = Math.atan2(directionY, directionX);
-        
-        if (distance < 10) {
-            panzer.setX(panzer.getNextX());
-            panzer.setY(panzer.getNextY());
-            panzer.setState("stop");
-            return;
-        }
-        
+
         CompletableFuture.runAsync(() -> {
-            panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
+        	//panzer.makeArrayOfNextteps();
+    		panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
+
         }).thenRun(() -> {
             if (panzer.path.size() > 0) {
                 int offsetX = 0;
@@ -856,8 +850,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 
                 for (int i = 0; i < 10; i++) {
                     if (panzer.path.size() > 0) {
-                        panzer.path.remove(0);
-                        
+                        panzer.path.remove(0);   
                     }
                 }
                 
@@ -887,7 +880,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             inf.setState("stop");
             return;
         }
-        //int currMap=importantMap(compressedMap, (int)inf.getNextX(), ()inf.getNextY());
         inf.findShortestPath(compressedMap, 100, 100);
         if(inf.path!=null && inf.path.size()>0) {
         	inf.setX(inf.path.get(0)[0]);
@@ -1206,7 +1198,21 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	
 		
 	}
-	
+	class MenuBar extends JPanel{
+		public MenuBar() {
+			this.setVisible(true);
+			this.setSize(1000,150);
+			this.setBackground(Color.GRAY);
+			initialization();
+		}
+		
+		public void initialization() {
+			JButton btn1=new JButton("Exit");
+			
+			btn1.addActionListener(e -> parentFrame.show(mainPanel, "Mission 1"));
+			this.add(btn1);
+		}
+	}
 }
 
 
