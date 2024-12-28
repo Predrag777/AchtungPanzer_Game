@@ -1209,7 +1209,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		public void initialization() {
 			JButton btn1=new JButton("Exit");
 			
-			btn1.addActionListener(e -> parentFrame.show(mainPanel, "Mission 1"));
+			btn1.addActionListener(e -> parentFrame.show(mainPanel, "MainMenu"));
 			this.add(btn1);
 		}
 	}
