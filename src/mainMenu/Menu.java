@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,10 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import main.Crtaj;
-import main.Field;
 
 public class Menu {
-
+	private boolean start=false;
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -61,12 +58,16 @@ public class Menu {
         
         MissionsPanel missionsPanel = new MissionsPanel("backgrounds/background1.jpg");
         mainPanel.add(missionsPanel, "Missions");
-        Mission1 missionsPanel2=new Mission1("backgrounds/missionbackg1.jpg");
-        mainPanel.add(missionsPanel2, "Mission1");
         
-        Mission2 mission2=new Mission2("backgrounds/missionbackg1.jpg");
-        mainPanel.add(mission2, "Mission2");
+        Mission1 mission1Panel = new Mission1("backgrounds/missionbackg1.jpg");
+        mainPanel.add(mission1Panel, "Mission1");
+        
+        Mission2 mission2Panel = new Mission2("backgrounds/missionbackg1.jpg");
+        mainPanel.add(mission2Panel, "Mission2");
+        
+        
     }
+
 
     private void addMainMenuButtons(JPanel mainMenuPanel) {
         JButton missionsButton = new JButton("Missions");
@@ -104,11 +105,10 @@ public class Menu {
             }
             setLayout(null);
             initialize();
-            
         }
 
         public void initialize() {
-        	JLabel missionsLabel = new JLabel("Welcome to the Missions");
+            JLabel missionsLabel = new JLabel("Welcome to the Missions");
             missionsLabel.setBounds(100, 50, 500, 40);
             missionsLabel.setForeground(Color.WHITE);
             add(missionsLabel);
@@ -135,48 +135,42 @@ public class Menu {
             if (backgroundImage != null) {
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
+            
         }
     }
 
-    class Mission1 extends MissionsPanel{
+    class Mission1 extends MissionsPanel {
 
-		public Mission1(String imagePath) {
-			super(imagePath);
-			// TODO Auto-generated constructor stub
-		}
-    	@Override
-    	public void initialize() {
-    		JButton contin = new JButton("Continue");
-    		contin.setBounds(800, 800, 200, 50);
-			contin.addActionListener(new ActionListener() {
-							
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
-								 Crtaj c;
-								try {
-									c = new Crtaj();
-									JFrame frame = new JFrame();
-			
-							        frame.setSize(1000, 1000);
-							        frame.setVisible(true);
-							        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-							        frame.add(c);
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							        
-							}
-						});
-            add(contin);
-            JButton backButton = new JButton("Back to Menu");
-            backButton.setBounds(100, 800, 200, 50);
-            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
-            add(backButton);
+        public Mission1(String imagePath) {
+            super(imagePath);
+        }
+        
+        protected void drawWrappedText(Graphics g, String text, int x, int y, int wrapWidth) {
+    	    FontMetrics metrics = g.getFontMetrics();
+    	    int lineHeight = metrics.getHeight();
+
+    	    String[] words = text.split(" ");
+    	    StringBuilder line = new StringBuilder();
+
+    	    for (String word : words) {
+    	        String testLine = line + word + " ";
+    	        int lineWidth = metrics.stringWidth(testLine);
+
+    	        if (lineWidth > wrapWidth) {
+    	            g.drawString(line.toString(), x, y);
+    	            line = new StringBuilder(word + " ");
+    	            y += lineHeight;
+    	        } else {
+    	            line.append(word).append(" ");
+    	        }
+    	    }
+
+    	    if (!line.isEmpty()) {
+    	        g.drawString(line.toString(), x, y);
+    	    }
     	}
-    	
-    	@Override
+        
+        @Override
     	protected void paintComponent(Graphics g) {
     	    super.paintComponent(g);
 
@@ -202,8 +196,38 @@ public class Menu {
     	    }
     	}
 
-    	
-    	protected void drawWrappedText(Graphics g, String text, int x, int y, int wrapWidth) {
+
+        @Override
+        public void initialize() {
+            JButton contin = new JButton("Continue");
+            contin.setBounds(800, 800, 200, 50);
+            contin.addActionListener(e -> cardLayout.show(mainPanel, "Crtaj"));
+            add(contin);
+
+            JButton backButton = new JButton("Back to Menu");
+            backButton.setBounds(100, 800, 200, 50);
+            contin.addActionListener(e -> {
+                try {
+                    Crtaj crtajPanel = new Crtaj(frame);
+                    mainPanel.add(crtajPanel, "Crtaj");
+                    cardLayout.show(mainPanel, "Crtaj");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            add(backButton);
+        }
+        
+       
+    }
+    
+    class Mission2 extends MissionsPanel {
+
+        public Mission2(String imagePath) {
+            super(imagePath);
+        }
+        
+        protected void drawWrappedText(Graphics g, String text, int x, int y, int wrapWidth) {
     	    FontMetrics metrics = g.getFontMetrics();
     	    int lineHeight = metrics.getHeight();
 
@@ -228,16 +252,20 @@ public class Menu {
     	    }
     	}
 
-    }
-    
-    class Mission2 extends MissionsPanel{
+        @Override
+        public void initialize() {
+            JButton contin = new JButton("Continue");
+            contin.setBounds(800, 800, 200, 50);
+            contin.addActionListener(e -> cardLayout.show(mainPanel, "Crtaj"));
+            add(contin);
 
-		public Mission2(String imagePath) {
-			super(imagePath);
-			// TODO Auto-generated constructor stub
-		}
-		
-		@Override
+            JButton backButton = new JButton("Back to Menu");
+            backButton.setBounds(100, 800, 200, 50);
+            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
+            add(backButton);
+        }
+        
+        @Override
     	protected void paintComponent(Graphics g) {
     	    super.paintComponent(g);
 
@@ -258,67 +286,9 @@ public class Menu {
     	    } catch (IOException e) {
     	        e.printStackTrace();
     	    }
-    	}
-		
-		@Override
-    	public void initialize() {
-    		JButton contin = new JButton("Continue");
-    		contin.setBounds(800, 800, 200, 50);
-			contin.addActionListener(new ActionListener() {
-							
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
-								 Crtaj c;
-								try {
-									c = new Crtaj();
-									JFrame frame = new JFrame();
-			
-							        frame.setSize(1000, 1000);
-							        frame.setVisible(true);
-							        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-							        frame.add(c);
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							        
-							}
-						});
-            add(contin);
-            JButton backButton = new JButton("Back to Menu");
-            backButton.setBounds(100, 800, 200, 50);
-            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
-            add(backButton);
-            
-    	}
-		
-		protected void drawWrappedText(Graphics g, String text, int x, int y, int wrapWidth) {
-    	    FontMetrics metrics = g.getFontMetrics();
-    	    int lineHeight = metrics.getHeight();
-
-    	    String[] words = text.split(" ");
-    	    StringBuilder line = new StringBuilder();
-
-    	    for (String word : words) {
-    	        String testLine = line + word + " ";
-    	        int lineWidth = metrics.stringWidth(testLine);
-
-    	        if (lineWidth > wrapWidth) {
-    	            g.drawString(line.toString(), x, y);
-    	            line = new StringBuilder(word + " ");
-    	            y += lineHeight;
-    	        } else {
-    	            line.append(word).append(" ");
-    	        }
-    	    }
-
-    	    if (!line.isEmpty()) {
-    	        g.drawString(line.toString(), x, y);
-    	    }
-    	}
+        }
     }
-    
+
     class BackgroundPanel extends JPanel {
         private Image backgroundImage;
 
