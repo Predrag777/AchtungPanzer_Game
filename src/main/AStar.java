@@ -63,7 +63,6 @@ public class AStar {
     private static boolean isValid(int x, int y, int[][] grid, int tankWidth, int tankHeight) {
     	if (x < 0 || y < 0 || y - tankHeight + 1 < 0 || x + tankWidth > grid[0].length || 
     		    isTankOverlapping(grid, x, y, tankWidth, tankHeight)) {
-    		    //System.out.println("Invalid tank position: Out of bounds or overlaps with an obstacle");
     		    return false;
     		}
 
@@ -72,7 +71,9 @@ public class AStar {
     
 
     public static boolean isTankOverlapping(int[][] grid, int x, int y, int tankWidth, int tankHeight) {
-        return grid[y][x] != 0 || 
+        if(x+tankWidth>=2000 || y-tankHeight<0 || y>=2000 || x>=2000)
+        	return false;
+    	return grid[y][x] != 0 || 
                grid[y][x + tankWidth - 1] != 0 || 
                grid[y - tankHeight + 1][x] != 0 ||  
                grid[y - tankHeight + 1][x + tankWidth - 1] != 0;  

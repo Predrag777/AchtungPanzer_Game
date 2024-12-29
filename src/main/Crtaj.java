@@ -826,7 +826,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void panzerAnimationMove(Panzer panzer) {
         panzer.setTarget(null);
-
+        
 		panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
 	
 	    if (panzer.path!=null && panzer.path.size() > 0) {

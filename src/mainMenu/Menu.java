@@ -140,7 +140,7 @@ public class Menu {
     }
 
     class Mission1 extends MissionsPanel {
-
+    	Crtaj crtajPanel;
         public Mission1(String imagePath) {
             super(imagePath);
         }
@@ -173,7 +173,18 @@ public class Menu {
         @Override
     	protected void paintComponent(Graphics g) {
     	    super.paintComponent(g);
-
+    	    if(crtajPanel!=null) {
+    	    	for (int i = 0; i < mainPanel.getComponentCount(); i++) {
+    	            if (mainPanel.getComponent(i) instanceof Crtaj) {
+    	                System.out.println("Obrisano");
+    	                cardLayout.removeLayoutComponent(mainPanel.getComponent(i));
+    	                crtajPanel=null;
+    	                System.gc();
+    	                
+    	                break;
+    	            }
+    	        }
+            }
     	    try {
     	        Image backgroundImage = ImageIO.read(new File("backgrounds/JSO.jpg"));
     	        g.drawImage(backgroundImage, 600, 100, 700, 400, null);
@@ -208,13 +219,18 @@ public class Menu {
             backButton.setBounds(100, 800, 200, 50);
             contin.addActionListener(e -> {
                 try {
-                    Crtaj crtajPanel = new Crtaj(frame);
+                    crtajPanel = new Crtaj(cardLayout, mainPanel);
                     mainPanel.add(crtajPanel, "Crtaj");
                     cardLayout.show(mainPanel, "Crtaj");
+                    if(!crtajPanel.isRunning) {
+                    	System.out.println("SS");
+                    }
+                    System.out.println(crtajPanel.isRunning);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             });
+            
             add(backButton);
         }
         
