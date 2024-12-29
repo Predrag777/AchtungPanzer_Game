@@ -585,6 +585,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	                selected.get(i).setCommand("Base");
 	                selected.get(i).setNextX(x);
 	                selected.get(i).setNextY(y);
+	            	selected.get(i).makeArrayOfNextteps2(500);
+
 	                selected.get(i).path=null;
 	                if(selected.get(i) instanceof Panzer)
 	                	playSound("audio/Panzer/Srbija/panzerMove.wav", 0,1 );
@@ -826,23 +828,31 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void panzerAnimationMove(Panzer panzer) {
         panzer.setTarget(null);
-        
-		panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
-	
+        if(panzer.stepByStep.size()>0) {
+        	panzer.findShortestPath(compressedMap, panzer.stepByStep.get(0)[0],panzer.stepByStep.get(0)[1], panzer.width, panzer.height);
+        }
 	    if (panzer.path!=null && panzer.path.size() > 0) {
 	    	
 	        panzer.setX(panzer.path.get(0)[0]);
 	        panzer.setY(panzer.path.get(0)[1]);
 	        for (int i = 0; i < 10; i++) {
 	            if (panzer.path.size() > 0) {
-	                panzer.path.remove(0);   
+	                panzer.path.remove(0); 
+	                
+	            }else {
+	            	if(panzer.stepByStep.size()>0)
+	            		panzer.stepByStep.remove(0);
 	            }
 	        }
 	        
 	    } else {
-	        panzer.setX(panzer.getNextX());
-	        panzer.setY(panzer.getNextY());
-	        panzer.setState("stop");
+	    	if(panzer.stepByStep.size()>0)
+	    		panzer.stepByStep.remove(0);
+	    	else {
+	    		panzer.setX(panzer.getNextX());
+	    		panzer.setY(panzer.getNextY());
+	    		panzer.setState("stop");
+	    	}
 	    }
     }
 
@@ -851,50 +861,35 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void infantryAnimationMove(Infantry inf) {
     	inf.setTarget(null);
-    	double deltaX=inf.getNextX()-inf.getX();
-    	double deltaY=inf.getNextY()-inf.getY();
     	
-    	double distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);
-    	
-    	double directionX = deltaX / distance;
-        double directionY = deltaY / distance;
-        angle = Math.atan2(directionY, directionX);
-        
-        if (distance < 10) {
+        if(inf.stepByStep.size()>0) {
+        	inf.findShortestPath(compressedMap, inf.stepByStep.get(0)[0],inf.stepByStep.get(0)[1], 100, 100);
+        }
+        if(inf.path!=null && inf.path.size()>0) {
+        	inf.setX(inf.path.get(0)[0]);
+        	inf.setY(inf.path.get(0)[1]);
+        	
+        	for(int i=0;i<10;i++)
+        		if(inf.path.size()>0)
+        			inf.path.remove(0);
+	        
+        }else {
         	inf.setX(inf.getNextX());
         	inf.setY(inf.getNextY());
-            inf.setState("stop");
-            return;
+        	inf.setState("stop");
         }
-        CompletableFuture.runAsync(() -> {
-
-        inf.findShortestPath(compressedMap, 100, 100);
-        }).thenRun(()->{
         
-	        if(inf.path!=null && inf.path.size()>0) {
-	        	inf.setX(inf.path.get(0)[0]);
-	        	inf.setY(inf.path.get(0)[1]);
-	        	
-	        	for(int i=0;i<10;i++)
-	        		if(inf.path.size()>0)
-	        			inf.path.remove(0);
-		        
-	        }else {
-	        	inf.setX(inf.getNextX());
-	        	inf.setY(inf.getNextY());
-	        	inf.setState("stop");
-	        }
-	        
-	        
-	    	if(infMove<5) {
-	    		inf.setCommand("move1");
-	    	}else if(infMove<10) {
-	    		inf.setCommand("move2");
-	    	}else {
-	    		infMove=-1;
-	    	}
-	    	infMove++;
-        });
+        
+    	if(infMove<5) {
+    		inf.setCommand("move1");
+    	}else if(infMove<10) {
+    		inf.setCommand("move2");
+    	}else {
+    		infMove=-1;
+    	}
+    	infMove++;
+        
+        
     }
 
 
