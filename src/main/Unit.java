@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Unit {
@@ -19,11 +20,16 @@ public class Unit {
 	private int damage;
 	private int speed;
 	private int fireRate;
+	public LinkedList<int[]> stepByStep=new LinkedList<>();
+	private int tempNextX;
+	private int tempNextY;
 	
 	private String command;
 	private String state;
 	private String side;
 	private int shootingError;
+	
+	int tempX, tempY;
 	
 	private Unit target;
 	private Unit enemy;//Enemy attacks you
@@ -54,25 +60,52 @@ public class Unit {
 	public void updateMap(int currMap[][], int start[][], int end[][]) {
 		this.myMap=currMap;
 	}
-	
 
 	public void findShortestPath(int map[][], int height, int width) {
-		if(this.path==null) {
-			int[] start = {(int) this.x, (int) this.y};
-		    int[] goal = {(int) this.nextX, (int) this.nextY};
+	    if (this.path == null) {
+	        this.path = new LinkedList<>();
 
-		    List<int[]> steps = AStar.astar(start, goal, map, width, height);
-	    	this.path = steps;
-		    if (steps != null) {
-		        /*for (int[] step : steps) {
-		            System.out.println(Arrays.toString(step)+"  "+map[step[0]][step[1]]);
-		        }*/
-		    } else {
-		        System.out.println("Nema puta do cilja!");
-		    }
-		    
-		}	
+	        List<int[]> intermediatePoints = makeArrayOfNextteps(500);
+
+	        int[] currentPos = {(int) this.x, (int) this.y};
+	        for (int[] nextPos : intermediatePoints) {
+	            List<int[]> segment = AStar.astar(currentPos, nextPos, map, width, height);
+	            if (segment == null) {
+	                System.out.println("No route");
+	                return;
+	            }System.out.println();
+	            /*for(int []a:segment) {
+	            	System.out.println(a[0]+" "+a[1]);
+	            }*/
+	            if (!this.path.isEmpty()) {
+	                segment.remove(0);
+	            }
+	            this.path.addAll(segment);
+	            currentPos = nextPos; 
+	        }
+	    }
 	}
+
+	private List<int[]> makeArrayOfNextteps(int stepSize) {
+	    List<int[]> points = new LinkedList<>();
+	    int startX = (int) this.x;
+	    int startY = (int) this.y;
+	    int endX = (int) this.nextX;
+	    int endY = (int) this.nextY;
+
+	    double distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+	    int numSteps = (int) Math.ceil(distance / stepSize);
+
+	    for (int i = 1; i <= numSteps; i++) {
+	        double t = (double) i / numSteps;
+	        int nextX = (int) (startX + t * (endX - startX));
+	        int nextY = (int) (startY + t * (endY - startY));
+	        points.add(new int[]{nextX, nextY});
+	    }
+
+	    return points;
+	}
+
 	
 	public Unit getEnemy() {
 		return enemy;
@@ -158,6 +191,7 @@ public class Unit {
 
 	public void setNextX(double nextX) {
 		this.nextX = nextX;
+		this.tempX=(int) this.x;
 	}
 
 	public double getY() {
@@ -174,6 +208,7 @@ public class Unit {
 
 	public void setNextY(double nextY) {
 		this.nextY = nextY;
+		this.tempY=(int)this.y;
 	}
 
 	public int getHealth() {
