@@ -691,13 +691,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		}
     	}
     }
-    
-    public void neightbourUnits(Unit unit) {
-    	int range=100;
-    	
-    	
-    }
-    
+
     public int[][] importantMap(int map[][], int x, int y){
     	int [][] newMap=new int[y+1][x+1];
     	for(int i=0;i<newMap.length;i++) {
@@ -707,10 +701,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	}
     	return newMap;
     }
-    
-    public void PanzerMove(Panzer panzer, List<Integer> moves) {
-    	
-    }
+
     
     public boolean isCrashedOnObstacle() {
     	for(int i=0;i<obs.length;i++) {
@@ -836,31 +827,26 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     public void panzerAnimationMove(Panzer panzer) {
         panzer.setTarget(null);
 
-        CompletableFuture.runAsync(() -> {
-        	//panzer.makeArrayOfNextteps();
-    		panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
-
-        }).thenRun(() -> {
-            if (panzer.path.size() > 0) {
-                int offsetX = 0;
-                int offsetY = 0;
-                
-                panzer.setX(panzer.path.get(0)[0] + offsetX);
-                panzer.setY(panzer.path.get(0)[1] + offsetY);
-
-                for (int i = 0; i < 10; i++) {
-                    if (panzer.path.size() > 0) {
-                        panzer.path.remove(0);   
-                    }
-                }
-                
-            } else {
-                panzer.setX(panzer.getNextX());
-                panzer.setY(panzer.getNextY());
-                panzer.setState("stop");
-            }
-        });
+		panzer.findShortestPath(compressedMap, panzer.width, panzer.height);
+	
+	    if (panzer.path!=null && panzer.path.size() > 0) {
+	    	
+	        panzer.setX(panzer.path.get(0)[0]);
+	        panzer.setY(panzer.path.get(0)[1]);
+	        for (int i = 0; i < 10; i++) {
+	            if (panzer.path.size() > 0) {
+	                panzer.path.remove(0);   
+	            }
+	        }
+	        
+	    } else {
+	        panzer.setX(panzer.getNextX());
+	        panzer.setY(panzer.getNextY());
+	        panzer.setState("stop");
+	    }
     }
+
+
 
     
     public void infantryAnimationMove(Infantry inf) {
@@ -880,30 +866,35 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             inf.setState("stop");
             return;
         }
+        CompletableFuture.runAsync(() -> {
+
         inf.findShortestPath(compressedMap, 100, 100);
-        if(inf.path!=null && inf.path.size()>0) {
-        	inf.setX(inf.path.get(0)[0]);
-        	inf.setY(inf.path.get(0)[1]);
-	        //followMap((Unit)panzer, panzer.path.get(0));
-        	for(int i=0;i<10;i++)
-        		if(inf.path.size()>0)
-        			inf.path.remove(0);
+        }).thenRun(()->{
+        
+	        if(inf.path!=null && inf.path.size()>0) {
+	        	inf.setX(inf.path.get(0)[0]);
+	        	inf.setY(inf.path.get(0)[1]);
+	        	
+	        	for(int i=0;i<10;i++)
+	        		if(inf.path.size()>0)
+	        			inf.path.remove(0);
+		        
+	        }else {
+	        	inf.setX(inf.getNextX());
+	        	inf.setY(inf.getNextY());
+	        	inf.setState("stop");
+	        }
 	        
-        }else {
-        	inf.setX(inf.getNextX());
-        	inf.setY(inf.getNextY());
-        	inf.setState("stop");
-        }
-        
-        
-    	if(infMove<5) {
-    		inf.setCommand("move1");
-    	}else if(infMove<10) {
-    		inf.setCommand("move2");
-    	}else {
-    		infMove=-1;
-    	}
-    	infMove++;
+	        
+	    	if(infMove<5) {
+	    		inf.setCommand("move1");
+	    	}else if(infMove<10) {
+	    		inf.setCommand("move2");
+	    	}else {
+	    		infMove=-1;
+	    	}
+	    	infMove++;
+        });
     }
 
 
@@ -1209,7 +1200,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		public void initialization() {
 			JButton btn1=new JButton("Exit");
 			
-			btn1.addActionListener(e -> parentFrame.show(mainPanel, "MainMenu"));
+			btn1.addActionListener(e -> {
+				parentFrame.show(mainPanel, "Mission1");
+				System.gc();
+				
+			});
 			this.add(btn1);
 		}
 	}
