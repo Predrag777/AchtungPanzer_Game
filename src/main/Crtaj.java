@@ -35,6 +35,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,6 +56,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     private CardLayout parentFrame;
     Timer t = new Timer(100, this);
     int counterForFire = 0;
+    
+    
     double angle = 0;
     int enemySide=1;
     int infMove=0;
@@ -148,7 +151,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         menu.setBounds(menuX, menuY, 1700, 50);
         this.add(menu);
         
-        playSound("audio/covers/backgroundSound1.wav",50, -20);
     }
  
     int mouseX=0;
@@ -422,11 +424,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        
-        
-
-
-
         
         selectedImage.setSelected(this.selected);
         isCrashedOnObstacle();
@@ -828,7 +825,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void panzerAnimationMove(Panzer panzer) {
         panzer.setTarget(null);
-        if(panzer.stepByStep.size()>0) {
+        if(panzer.stepByStep.size()>0 && (panzer.path==null || panzer.path.size()<1)) {
         	panzer.findShortestPath(compressedMap, panzer.stepByStep.get(0)[0],panzer.stepByStep.get(0)[1], panzer.width, panzer.height);
         }
 	    if (panzer.path!=null && panzer.path.size() > 0) {
@@ -839,21 +836,20 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	            if (panzer.path.size() > 0) {
 	                panzer.path.remove(0); 
 	                
-	            }else {
-	            	if(panzer.stepByStep.size()>0)
-	            		panzer.stepByStep.remove(0);
 	            }
 	        }
 	        
-	    } else {
-	    	if(panzer.stepByStep.size()>0)
-	    		panzer.stepByStep.remove(0);
-	    	else {
-	    		panzer.setX(panzer.getNextX());
-	    		panzer.setY(panzer.getNextY());
-	    		panzer.setState("stop");
-	    	}
-	    }
+	    } 
+
+	    if(panzer.path==null || panzer.path.size()==0) {
+        	if(panzer.stepByStep.size()>0) {
+        		panzer.stepByStep.remove(0);
+        		panzer.path=null;
+			}
+        }
+        if(panzer.stepByStep.size()==0 && (panzer.path==null || panzer.path.size()==0)){
+        	panzer.setState("stop");
+        }
     }
 
 
@@ -861,21 +857,26 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     public void infantryAnimationMove(Infantry inf) {
     	inf.setTarget(null);
-    	
-        if(inf.stepByStep.size()>0) {
+        if(inf.stepByStep.size()>0 && (inf.path==null || inf.path.size()<1)) {
         	inf.findShortestPath(compressedMap, inf.stepByStep.get(0)[0],inf.stepByStep.get(0)[1], 100, 100);
         }
         if(inf.path!=null && inf.path.size()>0) {
         	inf.setX(inf.path.get(0)[0]);
         	inf.setY(inf.path.get(0)[1]);
         	
-        	for(int i=0;i<10;i++)
+        	for(int i=0;i<10;i++) {
         		if(inf.path.size()>0)
         			inf.path.remove(0);
-	        
-        }else {
-        	inf.setX(inf.getNextX());
-        	inf.setY(inf.getNextY());
+        		
+        	}
+        }
+        if(inf.path==null || inf.path.size()==0) {
+        	if(inf.stepByStep.size()>0) {
+        		inf.stepByStep.remove(0);
+        		inf.path=null;
+			}
+        }
+        if(inf.stepByStep.size()==0 && (inf.path==null || inf.path.size()==0)){
         	inf.setState("stop");
         }
         
@@ -1196,7 +1197,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 			JButton btn1=new JButton("Exit");
 			
 			btn1.addActionListener(e -> {
+				JComponent comp = (JComponent) e.getSource();
+				Window win = SwingUtilities.getWindowAncestor(comp);
+				win.dispose();
+				isRunning=false;
+				System.out.println(isRunning);
 				parentFrame.show(mainPanel, "Mission1");
+				isRunning=false;
+				System.out.println(isRunning);
 				System.gc();
 				
 			});
