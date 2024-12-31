@@ -13,14 +13,14 @@ public class AStar {
     public static List<int[]> astar(int[] start, int[] goal, int[][] grid, int tankWidth, int tankHeight) {
         PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingDouble(n -> n.f));
         HashMap<String, Node> allNodes = new HashMap<>();
-
+        int numberOfIterations=100000;
         Node startNode = new Node(start[0], start[1], 0, euclideanHeuristic(start, goal), null);
         openList.add(startNode);
         allNodes.put(startNode.getKey(), startNode);
 
         Set<String> closedList = new HashSet<>();
 
-        while (!openList.isEmpty()) {
+        while (!openList.isEmpty() && numberOfIterations>0) {
             Node currentNode = openList.poll();
             int[] current = currentNode.getPosition();
 
@@ -55,6 +55,7 @@ public class AStar {
                     }
                 }
             }
+            numberOfIterations--;
         }
 
         return null;
