@@ -8,7 +8,7 @@ import main.Obstacles;
 import main.Panzer;
 import main.Unit;
 
-public class Mission1 extends Mission{
+public class Mission1 extends Mission {
 
 	LinkedList<Unit> myUnits=new LinkedList<>();
     LinkedList<Unit> enemyUnits=new LinkedList<>();
@@ -28,7 +28,7 @@ public class Mission1 extends Mission{
 		setEnemyUnits();
 		setObs();
 	}
-
+	@Override
 	public LinkedList<Unit> getMyUnits() {
 		return myUnits;
 	}
@@ -45,7 +45,7 @@ public class Mission1 extends Mission{
         
         this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,100, 1, 50, 25));
 	}
-
+	@Override
 	public LinkedList<Unit> getEnemyUnits() {
 		return enemyUnits;
 	}
@@ -71,7 +71,7 @@ public class Mission1 extends Mission{
         this.enemyUnits.push(new Infantry("Rifle", 2700, 1000, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 2750, 1050, 20,450, 30,10, 5, 30, 25));*/
 	}
-
+	@Override
 	public Obstacles[] getObs() {
 		return obs;
 	}
@@ -80,8 +80,8 @@ public class Mission1 extends Mission{
 		obs[0]=new Obstacles("panzer/broken2.png",800, 100,brokenHeight, brokenWidth, false);
         obs[1]=new Obstacles("panzer/broken2.png",350, 500,brokenHeight, brokenWidth, false);
         obs[2]=new Obstacles("panzer/broken3.png",1600, 50,brokenHeight, brokenWidth, false);
-        obs[3]=new Obstacles("panzer/buildings/house1.png",50, 600,buildingHeight, buildingWidth, false);
-        obs[4]=new Obstacles("panzer/buildings/house1.png",800, 700,buildingHeight, buildingWidth, false);
+        obs[3]=new Obstacles("panzer/buildings/house7.png",50, 600,buildingHeight, buildingWidth, false);
+        obs[4]=new Obstacles("panzer/buildings/house7.png",800, 700,buildingHeight, buildingWidth, false);
 
         
         obs[5]=new Obstacles("trees/tree1.png",1000, 400,treeHeight, treeWidth, false);
@@ -93,8 +93,8 @@ public class Mission1 extends Mission{
         obs[10]=new Obstacles("panzer/buildings/house2.png",1500, 1400,buildingHeight, buildingWidth, false);
         obs[11]=new Obstacles("panzer/buildings/house3.png",1850, 1500,buildingHeight, buildingWidth, false);
         obs[12]=new Obstacles("panzer/buildings/house4.png",1600, 850,buildingHeight, buildingWidth, false);
-        obs[13]=new Obstacles("panzer/buildings/house1.png",1500, 500,buildingHeight, buildingWidth,false);
-        obs[14]=new Obstacles("panzer/buildings/house1.png",1500, 1800,buildingHeight, buildingWidth, false);
+        obs[13]=new Obstacles("panzer/buildings/house6.png",1500, 500,buildingHeight, buildingWidth,false);
+        obs[14]=new Obstacles("panzer/buildings/house6.png",1500, 1800,buildingHeight, buildingWidth, false);
         
         obs[15]=new Obstacles("trees/tree2.png",1500, 400,treeHeight, treeWidth, false);
         obs[16]=new Obstacles("trees/tree2.png",1500, 1500,treeHeight, treeWidth, false);

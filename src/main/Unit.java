@@ -61,33 +61,19 @@ public class Unit {
 		this.myMap=currMap;
 	}
 
-	public void findShortestPath(int map[][], int height, int width) {
+	public void findShortestPath(int map[][], int sledeciX, int sledeciY, int height, int width) {
 	    if (this.path == null) {
 	        this.path = new LinkedList<>();
 
-	        List<int[]> intermediatePoints = makeArrayOfNextteps(500);
-
 	        int[] currentPos = {(int) this.x, (int) this.y};
-	        for (int[] nextPos : intermediatePoints) {
-	            List<int[]> segment = AStar.astar(currentPos, nextPos, map, width, height);
-	            if (segment == null) {
-	                System.out.println("No route");
-	                return;
-	            }System.out.println();
-	            /*for(int []a:segment) {
-	            	System.out.println(a[0]+" "+a[1]);
-	            }*/
-	            if (!this.path.isEmpty()) {
-	                segment.remove(0);
-	            }
-	            this.path.addAll(segment);
-	            currentPos = nextPos; 
-	        }
+	        int[] nexts= {sledeciX, sledeciY};
+            List<int[]> segment = AStar.astar(currentPos, nexts, map, width, height);
+            this.path=segment;
 	    }
 	}
 
-	private List<int[]> makeArrayOfNextteps(int stepSize) {
-	    List<int[]> points = new LinkedList<>();
+	public void makeArrayOfNextteps2(int stepSize) {
+	    LinkedList<int[]> points = new LinkedList<>();
 	    int startX = (int) this.x;
 	    int startY = (int) this.y;
 	    int endX = (int) this.nextX;
@@ -103,9 +89,32 @@ public class Unit {
 	        points.add(new int[]{nextX, nextY});
 	    }
 
-	    return points;
+	    this.stepByStep= points;
 	}
 
+	
+	public void autoShot(Unit unit, LinkedList<Unit> targetUnit) {
+    	double shortest=999999;
+    	Unit target=null;
+    	for(int i=0;i<targetUnit.size();i++) {
+    		
+    		double deltaX = targetUnit.get(i).getX() - this.getX();
+            double deltaY = targetUnit.get(i).getY() - this.getY();
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    		if(distance<this.getFireRange() && distance<shortest) {
+    			shortest=distance;
+    			target=targetUnit.get(i);
+    		}
+    	}
+    	
+    	setTarget(target);
+    	
+    }
+	
+	
+	
+	
+	
 	
 	public Unit getEnemy() {
 		return enemy;

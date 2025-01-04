@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import main.Crtaj;
-
+import Missions.*;
 public class Menu {
 	private boolean start=false;
     private JFrame frame;
@@ -59,10 +59,10 @@ public class Menu {
         MissionsPanel missionsPanel = new MissionsPanel("backgrounds/background1.jpg");
         mainPanel.add(missionsPanel, "Missions");
         
-        Mission1 mission1Panel = new Mission1("backgrounds/missionbackg1.jpg");
+        Mission1SS mission1Panel = new Mission1SS("backgrounds/missionbackg1.jpg");
         mainPanel.add(mission1Panel, "Mission1");
         
-        Mission2 mission2Panel = new Mission2("backgrounds/missionbackg1.jpg");
+        Mission2SS mission2Panel = new Mission2SS("backgrounds/missionbackg1.jpg");
         mainPanel.add(mission2Panel, "Mission2");
         
         
@@ -104,7 +104,7 @@ public class Menu {
                 e.printStackTrace();
             }
             setLayout(null);
-            initialize();
+           initialize();
         }
 
         public void initialize() {
@@ -139,9 +139,9 @@ public class Menu {
         }
     }
 
-    class Mission1 extends MissionsPanel {
+    class Mission1SS extends MissionsPanel {
     	Crtaj crtajPanel;
-        public Mission1(String imagePath) {
+        public Mission1SS(String imagePath) {
             super(imagePath);
         }
         
@@ -219,7 +219,8 @@ public class Menu {
             backButton.setBounds(100, 800, 200, 50);
             contin.addActionListener(e -> {
                 try {
-                    crtajPanel = new Crtaj(cardLayout, mainPanel);
+                	Mission m=new Mission1("panzer/background.jpg");
+                    crtajPanel = new Crtaj(cardLayout, mainPanel,m);
                     mainPanel.add(crtajPanel, "Crtaj");
                     cardLayout.show(mainPanel, "Crtaj");
                     if(!crtajPanel.isRunning) {
@@ -230,16 +231,17 @@ public class Menu {
                     ex.printStackTrace();
                 }
             });
-            
+            backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
             add(backButton);
         }
         
        
     }
     
-    class Mission2 extends MissionsPanel {
+    class Mission2SS extends MissionsPanel {
+    	Crtaj crtajPanel;
 
-        public Mission2(String imagePath) {
+        public Mission2SS(String imagePath) {
             super(imagePath);
         }
         
@@ -278,7 +280,22 @@ public class Menu {
             JButton backButton = new JButton("Back to Menu");
             backButton.setBounds(100, 800, 200, 50);
             backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
+            contin.addActionListener(e -> {
+                try {
+                	Mission m=new Mission2("panzer/background.jpg");
+                	crtajPanel = new Crtaj(cardLayout, mainPanel,m);
+                    mainPanel.add(crtajPanel, "Crtaj");
+                    cardLayout.show(mainPanel, "Crtaj");
+                    if(!crtajPanel.isRunning) {
+                    	System.out.println("SS");
+                    }
+                    System.out.println(crtajPanel.isRunning);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
             add(backButton);
+            
         }
         
         @Override

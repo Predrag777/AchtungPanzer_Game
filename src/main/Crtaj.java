@@ -62,7 +62,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     int enemySide=1;
     int infMove=0;
     public boolean isRunning=true;
-    int menuX=10,menuY=0;
+    int menuX=0,menuY=0;
     int newSize=500;
     int infSide=1;
     int enemyInfSide=1;
@@ -89,6 +89,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
     String radioSound=null;
     AI ai;
+    Mission m;
     Random rand = new Random();
     HashMap<Panzer, Panzer> targets=new HashMap<>();
     Obstacles[] obs=new Obstacles[30];
@@ -96,14 +97,14 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     List<Node> path;
     //BufferedImage images[];
     String brokens[]= {"panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png", "panzer/broken1.png","panzer/broken2.png","panzer/broken3.png","panzer/broken2.png","panzer/broken3.png"};
-    public Crtaj(CardLayout parentFrame, JPanel mainPanel) throws IOException {
+    public Crtaj(CardLayout parentFrame, JPanel mainPanel, Mission m) throws IOException {
         t.start();
         
         this.parentFrame = parentFrame;
         this.mainPanel=mainPanel;
         this.airplane=new Airplane("parachuterAirplane.png");
         selectedImage=new selectedUnits();
-        Mission1 m=new Mission1("SS");
+        this.m=m;
         this.myUnits=m.getMyUnits();
         this.enemyUnits=m.getEnemyUnits();
         this.obs=m.getObs();
@@ -115,7 +116,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         bombingList.push(new Explosion("Artilery",  1));
         
         try {
-            background = ImageIO.read(new File("panzer/background.jpg"));
+            background = ImageIO.read(new File(m.getBackground()));
         } catch (IOException e) {
             e.printStackTrace();
         }        
@@ -344,7 +345,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         }
         g2d.setTransform(oldTransform); 
         selectedImage.setBounds(selectedX+viewX, selectedY+viewY, 1000, 150);
-        menu.setBounds(menuX+viewX,menuY+viewY, 1700, 50);
+        menu.setBounds(menuX+viewX,menuY+viewY, 2000, 50);
+        menu.btn1.setBounds(1700, 0, 100, 50);
+        menu.btn2.setBounds(1590, 0, 100, 50);
+        menu.btn3.setBounds(1480, 0, 100, 50);
         try {
 			g.drawImage(ImageIO.read(new File("icons/bomb.png")), specX+viewX, specY+viewY, 50, 50,null);
 			g.drawImage(ImageIO.read(new File("icons/parachute.png")), specX+viewX, specY+100+viewY, 50, 50,null);
@@ -443,10 +447,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         setNextCoordinates(myUnits);
         //setNextCoordinates(enemyUnits);
         for(int i=0;i<myUnits.size();i++) {
-        	//avoidObst(myUnits.get(i));
-        	//myUnits.get(i).updateMap(this.map);
         	Unit newTarget=autoShot(myUnits.get(i), enemyUnits);
-        	
     		if(newTarget!=null && myUnits.get(i).getTarget()==null && !myUnits.get(i).getState().equalsIgnoreCase("move")) {
     			myUnits.get(i).setTarget(newTarget);
     			myUnits.get(i).getTarget().setEnemy(myUnits.get(i));
@@ -489,9 +490,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         for(int i=0;i<enemyUnits.size();i++) {
         	
         	
-        	if(enemyUnits.get(i).getEnemy()!=null && enemyUnits.get(i).getTarget()==null) {
+        	/*if(enemyUnits.get(i).getEnemy()!=null && enemyUnits.get(i).getTarget()==null) {
         		moveEnemy(enemyUnits.get(i));
-        	}
+        	}*/
         	Unit newTarget=autoShot(enemyUnits.get(i), myUnits);
         	
         	if(newTarget!=null && enemyUnits.get(i).getTarget()==null && !enemyUnits.get(i).getState().equalsIgnoreCase("move")) {
@@ -520,14 +521,23 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	if(enemyUnits.get(i).getHealth()<=0) {//DEATH
         		enemyUnits.remove(enemyUnits.get(i));
         	}
+
         }
         
         if (enemyUnits.size() <= 0) {
             JOptionPane.showMessageDialog(this, "Victory", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
             isRunning=false;
+            parentFrame.show(mainPanel, "Mission1");
+			isRunning=false;
+			System.out.println(isRunning);
+			System.gc();
         } else if (myUnits.size() <= 0) {
             JOptionPane.showMessageDialog(this, "Lose", "InfoBox: Message", JOptionPane.INFORMATION_MESSAGE);
             isRunning=false;
+            parentFrame.show(mainPanel, "Mission1");
+			isRunning=false;
+			System.out.println(isRunning);
+			System.gc();
         }
       
         
@@ -582,7 +592,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	                selected.get(i).setCommand("Base");
 	                selected.get(i).setNextX(x);
 	                selected.get(i).setNextY(y);
-	            	selected.get(i).makeArrayOfNextteps2(500);
+	            	selected.get(i).makeArrayOfNextteps2(400);
 
 	                selected.get(i).path=null;
 	                if(selected.get(i) instanceof Panzer)
@@ -683,10 +693,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	    } 
     	}
     
-    public void makeDistance(Unit unit, LinkedList<Unit> yourUnit, int pointer) {
+    public void makeDistance(Unit unit, LinkedList<Unit> yourUnit) {
     	for(int i=0;i<yourUnit.size()-1;i++) {
-    		if(i!=pointer && Math.abs(unit.getX()-yourUnit.get(i).getX())<100) {
-    			unit.setX(yourUnit.get(i).getX()+100);
+    		if(unit!=yourUnit.get(i) && Math.abs(unit.getY()-yourUnit.get(i).getY())<20) {
+    			unit.setY(yourUnit.get(i).getY()+40);
     		}
     	}
     }
@@ -827,6 +837,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         panzer.setTarget(null);
         if(panzer.stepByStep.size()>0 && (panzer.path==null || panzer.path.size()<1)) {
         	panzer.findShortestPath(compressedMap, panzer.stepByStep.get(0)[0],panzer.stepByStep.get(0)[1], panzer.width, panzer.height);
+            System.out.println(panzer.stepByStep.size());
+
         }
 	    if (panzer.path!=null && panzer.path.size() > 0) {
 	    	
@@ -847,9 +859,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		panzer.path=null;
 			}
         }
+
         if(panzer.stepByStep.size()==0 && (panzer.path==null || panzer.path.size()==0)){
         	panzer.setState("stop");
+        	makeDistance(panzer, myUnits);
         }
+        
     }
 
 
@@ -878,6 +893,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         }
         if(inf.stepByStep.size()==0 && (inf.path==null || inf.path.size()==0)){
         	inf.setState("stop");
+        	makeDistance(inf, myUnits);
         }
         
         
@@ -887,9 +903,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		inf.setCommand("move2");
     	}else {
     		infMove=-1;
+    		
     	}
     	infMove++;
-        
+    	 
         
     }
 
@@ -978,6 +995,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     @Override
     public void mouseExited(MouseEvent e) {}
 
+    
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -1072,13 +1090,23 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		ai.setTarget(target);
         		ai.setState("shot");
         	}else {
+            	ai.findShortestPath(compressedMap, ai.stepByStep.get(0)[0],ai.stepByStep.get(0)[1], 100, 100);
+
         		ai.setNextX(target.getX());
         		ai.setNextY(target.getY());
+        		ai.makeArrayOfNextteps2(300);
+        		int width=50;
+        		int height=50;
         		if(ai instanceof Infantry) {
         			infantryMove((Infantry)ai);
         		}else if(ai instanceof Panzer) {
+        			Panzer ss=(Panzer) ai;
         			panzerMove((Panzer)ai);
+        			width=ss.getWidth();
+        			height=ss.getHeight();
         		}
+        		
+
         	}	
         }
     	
@@ -1186,6 +1214,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		
 	}
 	class MenuBar extends JPanel{
+		JButton btn1=new JButton("Exit");
+		JButton btn2=new JButton("Option");
+		JButton btn3=new JButton("Example");
 		public MenuBar() {
 			this.setVisible(true);
 			this.setSize(1000,150);
@@ -1194,21 +1225,19 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		}
 		
 		public void initialization() {
-			JButton btn1=new JButton("Exit");
+			
 			
 			btn1.addActionListener(e -> {
-				JComponent comp = (JComponent) e.getSource();
-				Window win = SwingUtilities.getWindowAncestor(comp);
-				win.dispose();
-				isRunning=false;
-				System.out.println(isRunning);
 				parentFrame.show(mainPanel, "Mission1");
 				isRunning=false;
 				System.out.println(isRunning);
 				System.gc();
 				
 			});
+			
+			this.add(btn2);
 			this.add(btn1);
+			this.add(btn3);
 		}
 	}
 }
