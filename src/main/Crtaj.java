@@ -768,24 +768,37 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         //cursorImage
         ///System.out.println(mouseX+"  "+mouseY);
         boolean log=false;
+        boolean logNotAvailable=false;
         for(int i=0;i<enemyUnits.size();i++) {
         	int width=0;
     		if(enemyUnits.get(i) instanceof Panzer)
     			width=100;
     		else if(enemyUnits.get(i) instanceof Infantry)
     			width=30;
-    		if(((mouseX>enemyUnits.get(i).getX()-width && mouseX<enemyUnits.get(i).getX()+width &&
-    				mouseY>enemyUnits.get(i).getY()-50 && mouseY<enemyUnits.get(i).getY()+50))) {
+    		if(((mouseX>enemyUnits.get(i).getX() && mouseX<enemyUnits.get(i).getX()+width &&
+    				mouseY>enemyUnits.get(i).getY() && mouseY<enemyUnits.get(i).getY()+50))) {
     			log=true;
     		}
         }
-        if(log) {
-			cursorImage="icons/aimPointer.png";
-        }else {
-			cursorImage="icons/gauntler.png";
-
-        }
         
+        for(int i=0;i<obs.length;i++) {
+        	int width=0;
+    		
+    		if(((mouseX>obs[i].x && mouseX<obs[i].x+obs[i].width &&
+    				mouseY<obs[i].y+obs[i].height && mouseY>obs[i].y))) {
+    			logNotAvailable=true;
+    		}
+        }
+        if(!logNotAvailable) {
+	        if(log) {
+				cursorImage="icons/aimPointer.png";
+	        }else {
+				cursorImage="icons/gauntler.png";
+	
+	        }
+        }else {
+        	cursorImage="icons/notAvailable.png";
+        }
         repaint();
     }
 	
