@@ -19,6 +19,9 @@ public class Mission2 extends Mission {
     
     int brokenWidth=100;
     int brokenHeight=50;
+    
+    int targetX=100;
+    int targetY=100;
     Obstacles[] obs=new Obstacles[9];
     
 	public Mission2(String background) {

@@ -43,6 +43,24 @@ public class Infantry extends Unit{
     	}
     }
 	
+	public void machineAnimationShot() {
+   	 if(this.getState().equalsIgnoreCase("shot")) {
+    		//System.out.println(inf.getFireRate());
+    		if(this.getFireRate()>2) {
+    			this.setCommand("shot1");
+    		}else if(this.getFireRate()>1) {
+    			this.setCommand("shot2");
+    		}else if(this.getFireRate()>0){
+    			if(this.getFireRate()==1)
+    				playSound("audio/Infantry/rifleShot1.wav",0,3);
+    			this.setCommand("shot3");
+    		}else {
+    			this.setFireRate(this.reloading);
+    		}
+    		this.setFireRate(this.getFireRate()-1);
+    	}
+    }
+	
 	
 	public void infantryAnimationMove(int compressedMap[][]) {
     	this.setTarget(null);

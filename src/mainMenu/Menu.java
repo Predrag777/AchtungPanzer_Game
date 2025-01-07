@@ -24,7 +24,7 @@ public class Menu {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel mainPanel;
-
+    MissionsPanel missionsPanel = new MissionsPanel("backgrounds/background1.jpg");
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -56,7 +56,7 @@ public class Menu {
         addMainMenuButtons(mainMenuPanel);
         mainPanel.add(mainMenuPanel, "MainMenu");
         
-        MissionsPanel missionsPanel = new MissionsPanel("backgrounds/background1.jpg");
+        
         mainPanel.add(missionsPanel, "Missions");
         
         Mission1SS mission1Panel = new Mission1SS("backgrounds/missionbackg1.jpg");

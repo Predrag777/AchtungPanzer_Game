@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class Unit {
 	private String name;
@@ -138,7 +139,28 @@ public class Unit {
 	    	return target;
 	    }
 	
-	
+	 public int[] damagePanzer() {
+	    	Random rand=new Random();
+	    	int newX=(int)(this.getTarget().getX()-rand.nextInt(this.getShootingError()));
+			int newY=(int)(this.getTarget().getY()-rand.nextInt(this.getShootingError()));
+			
+			int []coordinations= {newX,newY};
+			if(this.getFireRate()==10 || (this.getFireRate()==1 && this.getName().contains("Machine"))) {
+				//System.out.println((int)unit.getTarget().getX()-newX);
+				if((int)this.getTarget().getX()-newX<=10) {//full damage
+					this.getTarget().setHealth(this.getTarget().getHealth()-this.getDamage());
+				}
+				else if((int)this.getTarget().getX()-newX<50) {
+					this.getTarget().setHealth((int)(this.getTarget().getHealth()-this.getDamage()*0.3));
+				}
+				else if((int)this.getTarget().getX()-newX<70) {
+					this.getTarget().setHealth((int)(this.getTarget().getHealth()-this.getDamage()*0.5));
+				}
+			}
+	    	
+	    	return coordinations;
+	    }
+	 
 	 public boolean checkShotingRange(Unit target) {
 	    	double deltaX=target.getX()-this.getX();
 	    	double deltaY=target.getY()-this.getY();
