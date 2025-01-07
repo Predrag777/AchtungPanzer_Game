@@ -112,8 +112,44 @@ public class Unit {
     }
 	
 	
+	public void makeDistance(Unit unit, LinkedList<Unit> yourUnit) {
+    	for(int i=0;i<yourUnit.size()-1;i++) {
+    		if(unit!=yourUnit.get(i) && Math.abs(unit.getY()-yourUnit.get(i).getY())<20) {
+    			unit.setY(yourUnit.get(i).getY()+40);
+    		}
+    	}
+    }
+	
+	 public Unit autoShot(LinkedList<Unit> targetUnit) {
+	    	double shortest=999999;
+	    	Unit target=null;
+	    	for(int i=0;i<targetUnit.size();i++) {
+	    		
+	    		double deltaX = targetUnit.get(i).getX() - this.getX();
+	            double deltaY = targetUnit.get(i).getY() - this.getY();
+	            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+	    		if(distance<this.getFireRange() && distance<shortest) {
+	    			shortest=distance;
+	    			target=targetUnit.get(i);
+	    		}
+	    	}
+	    	
+	    	
+	    	return target;
+	    }
 	
 	
+	 public boolean checkShotingRange(Unit target) {
+	    	double deltaX=target.getX()-this.getX();
+	    	double deltaY=target.getY()-this.getY();
+	    	
+	    	double distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+	    	
+	    	if(this.getFireRange()>=distance)
+	    		return true;
+	    	
+	    	return false;
+	    }
 	
 	
 	public Unit getEnemy() {
