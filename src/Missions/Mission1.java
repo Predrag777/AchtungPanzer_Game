@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import Missions.Mission;
 import main.Infantry;
+import main.Machinegun;
 import main.Obstacles;
 import main.Panzer;
 import main.Unit;
@@ -27,6 +28,7 @@ public class Mission1 extends Mission {
 		setMyUnits();
 		setEnemyUnits();
 		setObs();
+		this.type="defend";
 	}
 	@Override
 	public LinkedList<Unit> getMyUnits() {
@@ -34,16 +36,16 @@ public class Mission1 extends Mission {
 	}
 
 	public void setMyUnits() {
-		this.myUnits.push(new Panzer("tiger", 100, 100, 100,50, 500, 650, 40, 1000, 10, 60));
-        this.myUnits.push(new Panzer("panzerIV", 400, 100, 100, 50, 500, 650, 40, 1000, 10, 60));
-        
-        this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
+		//this.myUnits.push(new Panzer("tiger", 100, 100, 100,50, 500, 650, 40, 1000, 10, 60));
+        //this.myUnits.push(new Panzer("panzerIV", 400, 100, 100, 50, 500, 650, 40, 1000, 10, 60));
+        this.myUnits.push(new Machinegun("Machinegun", 100, 300, 100,5000, 500, 650, 40));
+        /*this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
         this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
         
-        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,100, 1, 50, 25));
+        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,100, 1, 50, 25));*/
 	}
 	@Override
 	public LinkedList<Unit> getEnemyUnits() {
@@ -107,12 +109,6 @@ public class Mission1 extends Mission {
         obs[22]=new Obstacles("trees/tree3.png",1870, 150,treeHeight, treeWidth,false);
         obs[23]=new Obstacles("trees/tree3.png",1855, 800,treeHeight, treeWidth, false);
         obs[24]=new Obstacles("trees/tree3.png",1888, 1000,treeHeight, treeWidth, false);
-        
-        /*obs[25]=new Obstacles("trees/tree3.png",2800, 1400,treeHeight, treeWidth, false);
-        obs[26]=new Obstacles("trees/tree3.png",2850, 500,treeHeight, treeWidth, false);
-        obs[27]=new Obstacles("trees/tree3.png",2870, 1150,treeHeight, treeWidth, false);
-        obs[28]=new Obstacles("trees/tree3.png",2855, 1800,treeHeight, treeWidth, false);
-        obs[29]=new Obstacles("trees/tree3.png",2888, 1200,treeHeight, treeWidth, false);*/
 	}
 
 	

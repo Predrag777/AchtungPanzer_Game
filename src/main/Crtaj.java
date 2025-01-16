@@ -86,6 +86,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     private JPanel mainPanel;
     selectedUnits selectedImage;
     
+    boolean log=false;
+    boolean logNotAvailable=false;
+    
+    
     int pointerX, pointerY;
     
     String radioSound=null;
@@ -218,6 +222,11 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		
         	}
         	for(int i=0;i<myUnits.size();i++) {
+        		if((myUnits.get(i) instanceof Machinegun || myUnits.get(i).getName().equalsIgnoreCase("Machinegun")) && myUnits.get(i).getTarget()!=null){
+    				Machinegun mg=(Machinegun) myUnits.get(i);
+        			
+        			g2d.drawImage(ImageIO.read(new File("specEffects/rifleHit.png")), mg.hitX, mg.hitY, 45,45,null);        			
+        		}
         		if(myUnits.get(i) instanceof Panzer) {
         		if(myUnits.get(i).getState().equalsIgnoreCase("shot") && myUnits.get(i).getTarget()!=null) {
         			Unit target=(Unit) myUnits.get(i).getTarget();
@@ -266,12 +275,29 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         			if(myUnits.get(i).getFireRate()==10) {
         				g2d.drawImage(ImageIO.read(new File("specEffects/panzerHit.png")), coordinations[0], coordinations[1], 100,100,null);
         			}
-        		}
+        		} 
         	}
         	
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        
+        for(int i=0;i<myUnits.size();i++) {
+        	
+        	if((myUnits.get(i) instanceof Machinegun || myUnits.get(i).getName().equalsIgnoreCase("Machinegun"))){
+    			
+    			Machinegun mg=(Machinegun) myUnits.get(i);
+    			try {
+					g2d.drawImage(ImageIO.read(new File(mg.image)), (int)mg.getX(), (int)mg.getY(), 50, 50, null);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+        }
+        
+        
 
         try {
             for (int i = 0; i < enemyUnits.size(); i++) {
@@ -385,7 +411,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         	try {
 				g.drawImage(ImageIO.read(new File("airplanes/parachuterAirplane.png")), (int)airplane.x, (int)airplane.y-500, 500, 500, null);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         	airplane.x+=50;
@@ -427,7 +452,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 						bombingList.pop();
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         	}
@@ -457,9 +481,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         else if (mouseX > getWidth() - borders) {
             viewX += mapSpeed;
         }
-        //ai.simulation(1000);
-        setNextCoordinates(myUnits);
-        //setNextCoordinates(enemyUnits);
+        if(m.type.equalsIgnoreCase("defend"))
+        	ai.simulation(1000);
+        //setNextCoordinates(myUnits);
         for(int i=0;i<myUnits.size();i++) {
         	Unit newTarget=myUnits.get(i).autoShot(enemyUnits);
     		if(newTarget!=null && myUnits.get(i).getTarget()==null && !myUnits.get(i).getState().equalsIgnoreCase("move")) {
@@ -467,6 +491,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     			myUnits.get(i).getTarget().setEnemy(myUnits.get(i));
     			myUnits.get(i).setState("shot");
     		}
+
+    		
         	if(myUnits.get(i).getTarget()!=null && myUnits.get(i).getState().equalsIgnoreCase("shot")) {
         		
         		
@@ -487,6 +513,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	        				Infantry inf=(Infantry) myUnits.get(i);
 	        				inf.infantryAnimationShot();
 	        			}
+	        		}else if(myUnits.get(i) instanceof Machinegun) {
+	        			Machinegun mg=(Machinegun) myUnits.get(i);
+	        			mg.machinegunShotAnimation(mg.getTarget());
+	        			
 	        		}
 	        		if(!enemyUnits.contains(myUnits.get(i).getTarget())) {
 	        			myUnits.get(i).setTarget(null);
@@ -579,8 +609,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    			width=150;
 	    		else if(enemyUnits.get(i) instanceof Infantry)
 	    			width=50;
-	    		if(((x>enemyUnits.get(i).getX()-width && x<enemyUnits.get(i).getX()+width &&
-	    				y>enemyUnits.get(i).getY()-100 && y<enemyUnits.get(i).getY()+100))) {
+	    		if(((x>enemyUnits.get(i).getX() && x<enemyUnits.get(i).getX()+width &&
+	    				y>enemyUnits.get(i).getY() && y<enemyUnits.get(i).getY()+50))) {
 	    			
 	    			
 	    			for(int j=0;j<selected.size();j++) {
@@ -592,6 +622,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 		                selected.get(j).setState("shot");
 		                selected.get(j).setTarget(enemyUnits.get(i));
 		                selected.get(j).getTarget().setEnemy(selected.get(j));
+		                if(selected.get(j) instanceof Machinegun && selected.get(j).getTarget()!=null) {
+		                    ((Machinegun) selected.get(j)).logFire = true;
+		                	
+		                }
 	    			}
 	    			foundTarget=true;
 	    		}
@@ -605,7 +639,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     				select=false;
     			}
     		}
-    		if(select) {
+    		if(select && !logNotAvailable) {
     			for(int i=0;i<selected.size();i++) {
     				selected.get(i).setTarget(null);
 	                selected.get(i).setState("move");
@@ -620,6 +654,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	                else if(selected.get(i) instanceof Infantry)
 	                	playSound("audio/Infantry/srbija/move.wav", 0,1);
     			}
+    		}else if(logNotAvailable) {
+    			playSound("audio/germanAutoShot.wav", 0,1);
     		}
 	    		
     	}
@@ -628,8 +664,9 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	    		int width=0;
 	    		if(myUnits.get(i) instanceof Panzer)
 	    			width=150;
-	    		else if(myUnits.get(i) instanceof Infantry)
+	    		else if(myUnits.get(i) instanceof Infantry || myUnits.get(i) instanceof Machinegun)
 	    			width=45;
+	    		
 	    		if(x>myUnits.get(i).getX() && x<myUnits.get(i).getX()+width &&
 	    		   y>myUnits.get(i).getY()-10 && y<myUnits.get(i).getY()+100 && !selected.contains(myUnits.get(i))) {
 	    			selected.add(myUnits.get(i));
@@ -694,7 +731,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
 
 
-     public static void playSound(String soundFile, int loopCount, float volume) {// volume={-80,6}
+    public static void playSound(String soundFile, int loopCount, float volume) {// volume={-80,6}
     	 try {
     	    	//volume=-80;
     	        File soundPath = new File(soundFile);
@@ -717,7 +754,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
      
     
     
-     public void moveEnemy(Unit enemyUnit) {
+    public void moveEnemy(Unit enemyUnit) {
     	Unit target=enemyUnit.getEnemy();
     	double x=target.getX();
     	double y=target.getY();
@@ -734,15 +771,17 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		}else if(enemyUnit instanceof Panzer) {
     			Panzer panzer=(Panzer) enemyUnit;
     			panzer.panzerAnimationMove(compressedMap);
-    		}
-    		
-    		
-    		
+    		}		
     	}	
     }
 
 
 
+    public void attackEnemy(Unit unit) {
+    	if(unit.getTarget()!=null) {
+    		Unit saveUnit=unit.getTarget();
+    	}
+    }
     @Override
     public void mousePressed(MouseEvent e) {}
     @Override
@@ -762,21 +801,19 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 	
 	@Override
     public void mouseMoved(MouseEvent e) {
+		log=false;
+		logNotAvailable=false;
         mouseX = e.getX();
         mouseY = e.getY();
         
-        //cursorImage
-        ///System.out.println(mouseX+"  "+mouseY);
-        boolean log=false;
-        boolean logNotAvailable=false;
         for(int i=0;i<enemyUnits.size();i++) {
         	int width=0;
     		if(enemyUnits.get(i) instanceof Panzer)
     			width=100;
     		else if(enemyUnits.get(i) instanceof Infantry)
     			width=30;
-    		if(((mouseX>enemyUnits.get(i).getX() && mouseX<enemyUnits.get(i).getX()+width &&
-    				mouseY>enemyUnits.get(i).getY() && mouseY<enemyUnits.get(i).getY()+50))) {
+    		if(((mouseX+viewX>enemyUnits.get(i).getX() && mouseX+viewX<enemyUnits.get(i).getX()+width &&
+    				mouseY+viewY>enemyUnits.get(i).getY() && mouseY+viewY<enemyUnits.get(i).getY()+50))) {
     			log=true;
     		}
         }
@@ -784,8 +821,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         for(int i=0;i<obs.length;i++) {
         	int width=0;
     		
-    		if(((mouseX>obs[i].x && mouseX<obs[i].x+obs[i].width &&
-    				mouseY<obs[i].y+obs[i].height && mouseY>obs[i].y))) {
+    		if(((mouseX+viewX>obs[i].x && mouseX+viewX<obs[i].x+obs[i].width &&
+    				mouseY+viewY<obs[i].y+obs[i].height && mouseY+viewY>obs[i].y))) {
     			logNotAvailable=true;
     		}
         }
@@ -880,7 +917,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		ai.setTarget(target);
         		ai.setState("shot");
         	}else {
-            	ai.findShortestPath(compressedMap, ai.stepByStep.get(0)[0],ai.stepByStep.get(0)[1], 100, 100);
+            	//ai.findShortestPath(compressedMap, ai.stepByStep.get(0)[0],ai.stepByStep.get(0)[1], 100, 100);
 
         		ai.setNextX(target.getX());
         		ai.setNextY(target.getY());
@@ -984,9 +1021,10 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 						g.drawImage(ImageIO.read(new File("panzer/"+selected.get(i).getName()+"Base.png")),x+i*200+50, 40, 100, 80, null);
 					}else if(selected.get(i) instanceof Infantry) {
 						g.drawImage(ImageIO.read(new File("infantry/Heer/Base"+selected.get(i).getName()+".png")),x+i*200+60, 30, 50, 80, null);
+					}else if(selected.get(i) instanceof Machinegun) {
+						g.drawImage(ImageIO.read(new File("Machinegun/machinegun1.png")),x+i*200+60, 30, 50, 80, null);
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

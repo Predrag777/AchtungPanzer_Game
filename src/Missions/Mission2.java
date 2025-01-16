@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import main.Infantry;
+import main.Machinegun;
 import main.Obstacles;
 import main.Panzer;
 import main.Unit;
@@ -29,6 +30,7 @@ public class Mission2 extends Mission {
 		setMyUnits();
 		setEnemyUnits();
 		setObs();
+		this.type="defend";
 	}
 
 	@Override
@@ -37,7 +39,12 @@ public class Mission2 extends Mission {
 	}
 
 	public void setMyUnits() {
+		this.myUnits.push(new Machinegun("MG-42", 550, 450, 100,5000, 500, 650, 40));
 		this.myUnits.push(new Panzer("tiger", 100, 1000, 100,50, 500, 650, 40, 1000, 10, 60));
+		
+		this.myUnits.push(new Infantry("Rifle", 300,400, 20,450, 30,10, 5, 30, 25));
+        this.myUnits.push(new Infantry("Rifle", 700, 400, 20,450, 30,10, 5, 30, 25));
+        this.myUnits.push(new Infantry("Rifle", 750, 400, 20,450, 30,10, 5, 30, 25));
 	}
 	@Override
 	public LinkedList<Unit> getEnemyUnits() {
@@ -45,22 +52,23 @@ public class Mission2 extends Mission {
 	}
 
 	public void setEnemyUnits() {
-		/*this.enemyUnits.push(new Panzer("Sherman", 500, 3800, 200, 100, 500, 700, 20, 50, 10, 80));
+		this.enemyUnits.push(new Panzer("Sherman", 500, 3800, 200, 100, 500, 700, 20, 50, 10, 80));
         this.enemyUnits.push(new Infantry("Rifle", 300,3800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 700, 3800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 750, 3850, 20,450, 30,10, 5, 30, 25));
-        */
         
+        
+
         
         
         this.enemyUnits.push(new Panzer("Sherman", 1500, 800, 100, 50, 500, 700, 20, 50, 10, 80));
-        /*this.enemyUnits.push(new Infantry("Rifle", 1300, 100, 20,450, 30,10, 5, 30, 25));
+        this.enemyUnits.push(new Infantry("Rifle", 1300, 100, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 1700, 100, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 1750, 150, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 1300, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 1700, 800, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 1750, 850, 20,450, 30,10, 5, 30, 25));
-        */
+       
         
         Random rand=new Random();
         for(int i=0;i<enemyUnits.size();i++) {
@@ -69,10 +77,10 @@ public class Mission2 extends Mission {
         }
         
         
-        /*
+        
         this.enemyUnits.push(new Infantry("Rifle", 2300, 1000, 20,450, 30,10, 5, 30, 25));
         this.enemyUnits.push(new Infantry("Rifle", 2700, 1000, 20,450, 30,10, 5, 30, 25));
-        this.enemyUnits.push(new Infantry("Rifle", 2750, 1050, 20,450, 30,10, 5, 30, 25));*/
+        this.enemyUnits.push(new Infantry("Rifle", 2750, 1050, 20,450, 30,10, 5, 30, 25));
 	}
 	@Override
 	public Obstacles[] getObs() {

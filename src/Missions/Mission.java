@@ -9,6 +9,7 @@ public abstract class Mission {
     LinkedList<Unit> enemyUnits = new LinkedList<>();
     Obstacles[] obs = new Obstacles[30];
     String background;
+    public String type="offansive";//offansive, defensive ==>offansive->you attack deffensive->you deffend
 
     public Mission(String background) {
         this.background = background;
