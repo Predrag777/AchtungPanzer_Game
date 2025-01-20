@@ -28,7 +28,7 @@ public class Mission1 extends Mission {
 		setMyUnits();
 		setEnemyUnits();
 		setObs();
-		this.type="defend";
+		this.type="offansive";
 	}
 	@Override
 	public LinkedList<Unit> getMyUnits() {
@@ -36,16 +36,16 @@ public class Mission1 extends Mission {
 	}
 
 	public void setMyUnits() {
-		//this.myUnits.push(new Panzer("tiger", 100, 100, 100,50, 500, 650, 40, 1000, 10, 60));
-        //this.myUnits.push(new Panzer("panzerIV", 400, 100, 100, 50, 500, 650, 40, 1000, 10, 60));
+		this.myUnits.push(new Panzer("tiger", 100, 100, 100,50, 500, 650, 40, 1000, 10, 60));
+        this.myUnits.push(new Panzer("panzerIV", 400, 100, 100, 50, 500, 650, 40, 1000, 10, 60));
         this.myUnits.push(new Machinegun("Machinegun", 100, 300, 100,5000, 500, 650, 40));
-        /*this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
+        this.myUnits.push(new Infantry("Rifle", 50,50, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,100, 20,500, 30,10, 5, 30, 25));
         this.myUnits.push(new Infantry("Rifle", 50,150, 20,500, 30,10, 5, 30, 25));
         
         this.myUnits.push(new Infantry("MachinePistol", 50,230, 20,500, 3,15, 5, 80, 3));
         
-        this.myUnits.push(new Infantry("Mortar",100,50, 20,800, 25,100, 1, 50, 25));*/
+        this.myUnits.push(new Infantry("Mortar",100,350, 20,800, 25,100, 1, 50, 25));
 	}
 	@Override
 	public LinkedList<Unit> getEnemyUnits() {

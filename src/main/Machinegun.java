@@ -23,7 +23,6 @@ public class Machinegun extends Unit{
 	public Machinegun(String name, double x, double y, int health, int fireRange, int fireRate, int damage, 
 			int shootingError) {
 		super(name, x, y, health, fireRange, fireRate, damage, 0, shootingError);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void machinegunShotAnimation(Unit target) {

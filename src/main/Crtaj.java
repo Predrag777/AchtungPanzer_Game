@@ -57,7 +57,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     Timer t = new Timer(100, this);
     int counterForFire = 0;
     String cursorImage="icons/gauntler.png";
-    
+    int infMove=0;
     double angle = 0;
     int enemySide=1;
     public boolean isRunning=true;
@@ -542,7 +542,12 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         
         for(int i=0;i<enemyUnits.size();i++) {
         	Unit newTarget=enemyUnits.get(i).autoShot(myUnits);
-        	
+        	//enemyUnitImproved(enemyUnits.get(i));
+        	enemyUnits.get(i).setNextX(50);
+        	enemyUnits.get(i).setNextY(100);
+        	if(enemyUnits.get(i).getEnemy()!=null && enemyUnits.get(i).getTarget()==null) {
+        		ai.singleSimulation(1000, enemyUnits.get(i));
+        	}
         	if(newTarget!=null && enemyUnits.get(i).getTarget()==null && !enemyUnits.get(i).getState().equalsIgnoreCase("move")) {
         		enemyUnits.get(i).setTarget(newTarget);
         		enemyUnits.get(i).getTarget().setEnemy(enemyUnits.get(i));
@@ -733,7 +738,7 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
 
     public static void playSound(String soundFile, int loopCount, float volume) {// volume={-80,6}
     	 try {
-    	    	//volume=-80;
+    	    	volume=-80;
     	        File soundPath = new File(soundFile);
     	        AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundPath);
     	        Clip clip = AudioSystem.getClip();
@@ -752,6 +757,85 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     
      
      
+    public void improvedMoveEnemy(Unit ai, Unit target) {
+    	double x=target.getX();
+    	double y=target.getY();
+    	
+    	if(ai.checkShotingRange(target) && ai.getTarget()==null) {
+    		ai.setTarget(target);
+    		ai.setState("shot");
+    	}else {
+    		ai.setNextX(target.getX());
+    		ai.setNextY(target.getY());
+    		ai.makeArrayOfNextteps2(300);
+    		int width=50;
+    		int height=50;
+    		if(ai instanceof Infantry) {
+    			infantryMove((Infantry)ai);
+    		}else if(ai instanceof Panzer) {
+    			Panzer ss=(Panzer) ai;
+    			panzerMove((Panzer)ai);
+    			width=ss.getWidth();
+    			height=ss.getHeight();
+    		}
+    		
+
+    	}	
+    }
+    
+    
+    public void infantryMove(Infantry inf) {
+    	inf.setTarget(null);
+    	double deltaX=inf.getNextX()-inf.getX();
+    	double deltaY=inf.getNextY()-inf.getY();
+    	
+    	double distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+    	
+    	double directionX = deltaX / distance;
+        double directionY = deltaY / distance;
+        angle = Math.atan2(directionY, directionX);
+        
+        if (distance < 10) {
+        	inf.setX(inf.getNextX());
+        	inf.setY(inf.getNextY());
+            inf.setState("stop");
+            return;
+        }
+        inf.setX(inf.getX()+directionX);
+    	inf.setY(inf.getY()+directionY);
+        
+        
+    	if(infMove<5) {
+    		inf.setCommand("move1");
+    	}else if(infMove<10) {
+    		inf.setCommand("move2");
+    	}else {
+    		infMove=-1;
+    	}
+    	infMove++;
+    }
+	
+	public void panzerMove(Panzer panzer) {
+    	panzer.setTarget(null);
+    	double deltaX=panzer.getNextX()-panzer.getX();
+    	double deltaY=panzer.getNextY()-panzer.getY();
+    	
+    	double distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+    	
+    	double directionX = deltaX / distance;
+        double directionY = deltaY / distance;
+        angle = Math.atan2(directionY, directionX);
+        
+        if (distance < 10) {
+        	panzer.setX(panzer.getNextX());
+        	panzer.setY(panzer.getNextY());
+        	panzer.setState("stop");
+            return;
+        }
+        panzer.setX(panzer.getX()+directionX);
+        panzer.setY(panzer.getY()+directionY);
+    }
+	
     
     
     public void moveEnemy(Unit enemyUnit) {
@@ -771,8 +855,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     		}else if(enemyUnit instanceof Panzer) {
     			Panzer panzer=(Panzer) enemyUnit;
     			panzer.panzerAnimationMove(compressedMap);
-    		}		
-    	}	
+    		}
+    	}
     }
 
 
@@ -889,7 +973,24 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
     	}
     	
     	
-    	
+    	public void singleSimulation(int numOfSimulations, Unit ai) {
+    		for(int i=0;i<numOfSimulations;i++) {
+    			for(int j=0;j<aiUnit.size();j++) {
+    				evaluateMove(aiUnit.get(j), j);
+    			}
+    		}
+    		for(int i=0;i<aiUnit.size();i++) {
+    			if(reward.get(i)>60000 && ai==aiUnit.get(i)) {//go forward
+    				if(!aiUnit.get(i).getState().equalsIgnoreCase("shot")) {
+    					for(int j=0;j<enemyUnit.size();j++)
+    						moveEnemy(aiUnit.get(i), enemyUnit.get(j));
+    				}
+    			}else {
+    				
+    			}
+    		}
+    		
+    	}
     	public void simulation(int numOfSimulations) {
     		for(int i=0;i<numOfSimulations;i++) {
     			for(int j=0;j<aiUnit.size();j++) {
@@ -917,8 +1018,6 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
         		ai.setTarget(target);
         		ai.setState("shot");
         	}else {
-            	//ai.findShortestPath(compressedMap, ai.stepByStep.get(0)[0],ai.stepByStep.get(0)[1], 100, 100);
-
         		ai.setNextX(target.getX());
         		ai.setNextY(target.getY());
         		ai.makeArrayOfNextteps2(300);
@@ -954,8 +1053,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
                 inf.setState("stop");
                 return;
             }
-            inf.setX(inf.getX()+directionX*5);
-        	inf.setY(inf.getY()+directionY*5);
+            inf.setX(inf.getX()+directionX);
+        	inf.setY(inf.getY()+directionY);
             
             
         	if(infMove<5) {
@@ -985,8 +1084,8 @@ public class Crtaj extends JPanel implements MouseListener, ActionListener, Mous
             	panzer.setState("stop");
                 return;
             }
-            panzer.setX(panzer.getX()+directionX*5);
-            panzer.setY(panzer.getY()+directionY*5);
+            panzer.setX(panzer.getX()+directionX);
+            panzer.setY(panzer.getY()+directionY);
         }
     	
     }
